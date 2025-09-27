@@ -14,12 +14,72 @@
 Access your job search engine at: http://localhost:8000
 Press Ctrl+C to stop the server
 
-Traceback (most recent call last):
-  File "/workspaces/Job-Application-Optimizer/app.py", line 6, in <module>
-    from job_aggregator import JobAggregator
-  File "/workspaces/Job-Application-Optimizer/job_aggregator.py", line 6, in <module>
-    from indeed_scraper import IndeedScraper
-  File "/workspaces/Job-Application-Optimizer/indeed_scraper.py", line 328
-    if any(currency in salary_text for currency in ['₦', ', '€', '£', 'USD', 'NGN', 'GBP']):
-                                                             ^
-SyntaxError: invalid character '€' (U+20AC)
+2025-09-27 22:08:25,362 - __main__ - INFO - Starting Hunter Job Search on 0.0.0.0:8000
+ * Serving Flask app 'app'
+ * Debug mode: off
+2025-09-27 22:08:25,364 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://10.0.1.242:8000
+2025-09-27 22:08:25,364 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-27 22:08:46,299 - __main__ - INFO - GET / - 127.0.0.1
+2025-09-27 22:08:46,319 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 22:08:46] "GET / HTTP/1.1" 200 -
+2025-09-27 22:09:01,521 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-27 22:09:01,521 - __main__ - INFO - Job search: 'Full' in 'Lagos' type:'all' local:True
+2025-09-27 22:09:01,524 - jobberman_scraper - INFO - Searching Jobberman: https://www.jobberman.com/jobs?q=Full&location=Lagos
+2025-09-27 22:09:01,526 - indeed_scraper - INFO - Searching Indeed: https://ng.indeed.com/jobs?q=Full&l=Lagos&start=0&sort=relevance
+2025-09-27 22:09:02,032 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-27 22:09:02,263 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-27 22:09:02,840 - api_manager - ERROR - JSearch API 403 Forbidden - Check API key validity and usage limits
+2025-09-27 22:09:02,841 - job_aggregator - INFO - JSearch API: Found 0 jobs
+2025-09-27 22:09:05,941 - indeed_scraper - WARNING - Attempt 1 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full&l=Lagos&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
+2025-09-27 22:09:11,158 - jobberman_scraper - WARNING - HTTP 410 for https://www.jobberman.com/search-jobs?q=Full
+2025-09-27 22:09:16,151 - jobberman_scraper - WARNING - HTTP 410 for https://www.jobberman.com/search-jobs?q=Full
+2025-09-27 22:09:18,321 - indeed_scraper - WARNING - Attempt 2 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full&l=Lagos&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
+2025-09-27 22:09:21,569 - jobberman_scraper - WARNING - HTTP 410 for https://www.jobberman.com/search-jobs?q=Full
+2025-09-27 22:09:26,779 - jobberman_scraper - INFO - Jobberman scraper found 0 jobs
+2025-09-27 22:09:26,780 - job_aggregator - INFO - Jobberman: Found 0 jobs
+2025-09-27 22:09:29,561 - indeed_scraper - WARNING - Attempt 3 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full&l=Lagos&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
+2025-09-27 22:09:33,036 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
+2025-09-27 22:09:43,335 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
+2025-09-27 22:09:56,416 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
+2025-09-27 22:10:15,863 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
+2025-09-27 22:10:26,649 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
+2025-09-27 22:10:38,683 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
+2025-09-27 22:10:51,632 - __main__ - INFO - GET / - 127.0.0.1
+2025-09-27 22:10:51,632 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 22:10:51] "GET / HTTP/1.1" 200 -
+2025-09-27 22:10:54,948 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
+2025-09-27 22:11:10,547 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
+2025-09-27 22:11:19,322 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-27 22:11:19,322 - __main__ - INFO - Job search: 'Accountant' in 'Calabar' type:'all' local:False
+2025-09-27 22:11:19,325 - jobberman_scraper - INFO - Searching Jobberman: https://www.jobberman.com/jobs?q=Accountant&location=Calabar
+2025-09-27 22:11:19,326 - indeed_scraper - INFO - Searching Indeed: https://ng.indeed.com/jobs?q=Accountant&l=Calabar&start=0&sort=relevance
+2025-09-27 22:11:19,840 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-27 22:11:19,962 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-27 22:11:20,700 - api_manager - ERROR - JSearch API 403 Forbidden - Check API key validity and usage limits
+2025-09-27 22:11:20,701 - job_aggregator - INFO - JSearch API: Found 0 jobs
+2025-09-27 22:11:24,089 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
+2025-09-27 22:11:24,884 - indeed_scraper - WARNING - Attempt 1 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Accountant&l=Calabar&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
+2025-09-27 22:11:31,622 - jobberman_scraper - WARNING - HTTP 410 for https://www.jobberman.com/search-jobs?q=Accountant
+2025-09-27 22:11:36,157 - indeed_scraper - WARNING - Attempt 2 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Accountant&l=Calabar&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
+2025-09-27 22:11:37,269 - jobberman_scraper - WARNING - HTTP 410 for https://www.jobberman.com/search-jobs?q=Accountant
+2025-09-27 22:11:41,151 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
+2025-09-27 22:11:41,935 - jobberman_scraper - WARNING - HTTP 410 for https://www.jobberman.com/search-jobs?q=Accountant
+2025-09-27 22:11:49,948 - jobberman_scraper - INFO - Jobberman scraper found 0 jobs
+2025-09-27 22:11:49,949 - job_aggregator - INFO - Jobberman: Found 0 jobs
+2025-09-27 22:11:50,359 - indeed_scraper - WARNING - Attempt 3 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Accountant&l=Calabar&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
+2025-09-27 22:11:52,354 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
+2025-09-27 22:11:57,502 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
+2025-09-27 22:12:05,787 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
+2025-09-27 22:12:14,546 - indeed_scraper - INFO - Indeed scraper found 0 jobs
+2025-09-27 22:12:14,546 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-27 22:12:14,546 - job_aggregator - INFO - Total jobs found: 0, Unique jobs: 0
+2025-09-27 22:12:14,551 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 22:12:14] "POST / HTTP/1.1" 200 -
+2025-09-27 22:12:16,779 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
+2025-09-27 22:12:31,717 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
+2025-09-27 22:12:42,801 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
+2025-09-27 22:12:54,651 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
+2025-09-27 22:13:05,865 - __main__ - INFO - GET / - 127.0.0.1
+2025-09-27 22:13:05,865 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 22:13:05] "GET / HTTP/1.1" 200 -
+2025-09-27 22:13:07,024 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
+2025-09-27 22:13:25,198 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
