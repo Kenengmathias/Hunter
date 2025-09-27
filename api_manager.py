@@ -1,5 +1,6 @@
 import requests
 import logging
+import time
 from typing import List, Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -58,6 +59,7 @@ class APIManager:
             return jobs
         
         try:
+            # Enhanced location mapping with better Nigerian support
             location_map = {
                 'remote': 'us',
                 'new york, ny': 'us', 
@@ -65,19 +67,34 @@ class APIManager:
                 'london, uk': 'gb',
                 'berlin, de': 'de',
                 'toronto, on': 'ca',
-                'nigeria': 'ng',
-                'lagos': 'ng',
-                'abuja': 'ng',
-                'calabar': 'ng'
+                'nigeria': 'us',  # Changed to US for better results
+                'lagos': 'us',    # Nigerian cities mapped to US for global jobs
+                'abuja': 'us',
+                'calabar': 'us',
+                'port harcourt': 'us',
+                'kano': 'us',
+                'ibadan': 'us',
+                'uk': 'gb',
+                'united kingdom': 'gb',
+                'usa': 'us',
+                'united states': 'us'
             }
             
             country = location_map.get(location.lower(), 'us')
             base_url = f"https://api.adzuna.com/v1/api/jobs/{country}/search/1"
+            
+            # Enhanced query for Nigerian locations
+            what_query = keywords
+            if any(nigerian_city in location.lower() for nigerian_city in ['nigeria', 'lagos', 'abuja', 'calabar']):
+                what_query = f"{keywords} Nigeria"
+            
             params = {
                 'app_id': self.adzuna_app_id,
                 'app_key': self.adzuna_app_key,
-                'what': keywords,
-                'results_per_page': max_results
+                'what': what_query,
+                'where': location if country != 'us' else '',
+                'results_per_page': max_results,
+                'sort_by': 'relevance'
             }
             
             response = requests.get(base_url, params=params, timeout=15)
@@ -89,7 +106,7 @@ class APIManager:
                     salary_max = job.get('salary_max', 0)
                     salary = ''
                     if salary_min and salary_max:
-                        currency = '$' if country == 'us' else '₦' if country == 'ng' else '$'
+                        currency = '$' if country in ['us', 'ca'] else '£' if country == 'gb' else '€' if country == 'de' else '$'
                         salary = f"{currency}{salary_min:,.0f} - {currency}{salary_max:,.0f}"
                     
                     jobs.append({
@@ -103,7 +120,7 @@ class APIManager:
                         'source': 'Adzuna'
                     })
             else:
-                logger.error(f"Adzuna API error: {response.status_code}")
+                logger.error(f"Adzuna API error: {response.status_code} - {response.text}")
                 
         except requests.RequestException as e:
             logger.error(f'Error searching Adzuna: {str(e)}')
@@ -111,7 +128,7 @@ class APIManager:
         return jobs
     
     def search_jsearch(self, keywords: str, location: str = "", max_results: int = 5) -> List[Dict]:
-        """Search jobs using JSearch API"""
+        """Search jobs using JSearch API with improved error handling"""
         jobs = []
         if not self.jsearch_key:
             logger.warning("JSEARCH_API_KEY not configured")
@@ -119,48 +136,89 @@ class APIManager:
         
         try:
             url = "https://jsearch.p.rapidapi.com/search"
-            query = f"{keywords} in {location}" if location else keywords
+            
+            # Enhanced query building
+            if location and location.lower() != 'remote':
+                # For Nigerian locations, include Nigeria in query
+                if any(nigerian_city in location.lower() for nigerian_city in ['nigeria', 'lagos', 'abuja', 'calabar', 'port harcourt']):
+                    query = f"{keywords} {location} Nigeria"
+                else:
+                    query = f"{keywords} {location}"
+            else:
+                query = keywords
+            
             querystring = {
                 "query": query,
                 "page": "1",
                 "num_pages": "1",
-                "date_posted": "all"
+                "date_posted": "all",
+                "employment_types": "FULLTIME,PARTTIME,CONTRACTOR,INTERN"
             }
             
             headers = {
-                "X-RapidAPI-Key": self.jsearch_key,
-                "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
+                "x-rapidapi-key": self.jsearch_key,  # lowercase header
+                "x-rapidapi-host": "jsearch.p.rapidapi.com",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             
-            response = requests.get(url, headers=headers, params=querystring, timeout=15)
+            # Add delay to avoid rate limiting
+            time.sleep(1)
+            
+            response = requests.get(url, headers=headers, params=querystring, timeout=20)
             
             if response.status_code == 200:
                 data = response.json()
-                for job in data.get('data', [])[:max_results]:
+                job_data = data.get('data', [])
+                
+                if not job_data:
+                    logger.warning("JSearch returned no job data")
+                    return jobs
+                
+                for job in job_data[:max_results]:
                     # Extract salary information
                     salary = ""
                     salary_min = job.get('job_salary_min')
                     salary_max = job.get('job_salary_max')
                     salary_currency = job.get('job_salary_currency', 'USD')
+                    salary_period = job.get('job_salary_period', 'YEAR')
                     
                     if salary_min and salary_max:
-                        currency_symbol = '$' if salary_currency == 'USD' else '₦' if salary_currency == 'NGN' else salary_currency
-                        salary = f"{currency_symbol}{salary_min:,} - {currency_symbol}{salary_max:,}"
+                        currency_symbol = '$' if salary_currency == 'USD' else '₦' if salary_currency == 'NGN' else '£' if salary_currency == 'GBP' else salary_currency
+                        period = '/year' if salary_period == 'YEAR' else '/month' if salary_period == 'MONTH' else '/hour' if salary_period == 'HOUR' else ''
+                        salary = f"{currency_symbol}{salary_min:,} - {currency_symbol}{salary_max:,}{period}"
+                    
+                    # Build location string
+                    job_city = job.get('job_city', '')
+                    job_state = job.get('job_state', '')
+                    job_country = job.get('job_country', '')
+                    
+                    job_location = ', '.join(filter(None, [job_city, job_state, job_country]))
                     
                     jobs.append({
                         'title': job.get('job_title', 'No title'),
                         'company': job.get('employer_name', 'Unknown'),
                         'link': job.get('job_apply_link', '#'),
-                        'location': job.get('job_city', '') + ', ' + job.get('job_country', ''),
+                        'location': job_location or 'Remote',
                         'salary': salary,
-                        'description': job.get('job_description', '')[:200],
+                        'description': (job.get('job_description', '') or '')[:200],
                         'job_type': job.get('job_employment_type', ''),
                         'source': 'JSearch'
                     })
+                    
+                logger.info(f"JSearch returned {len(jobs)} jobs")
+                
+            elif response.status_code == 403:
+                logger.error(f"JSearch API 403 Forbidden - Check API key validity and usage limits")
+                logger.debug(f"Response headers: {response.headers}")
+            elif response.status_code == 429:
+                logger.warning(f"JSearch API rate limited (429) - waiting before retry")
+                time.sleep(5)
             else:
-                logger.error(f"JSearch API error: {response.status_code}")
+                logger.error(f"JSearch API error: {response.status_code} - {response.text[:200]}")
                 
         except requests.RequestException as e:
             logger.error(f'Error searching JSearch: {str(e)}')
+        except Exception as e:
+            logger.error(f'Unexpected error in JSearch: {str(e)}')
         
         return jobs

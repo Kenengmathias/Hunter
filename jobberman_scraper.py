@@ -19,40 +19,44 @@ class JobbermanScraper:
     
     def search_jobs(self, keywords: str, location: str = '', job_type: str = '', 
                    max_results: int = 10) -> List[Dict]:
-        """Search jobs on Jobberman"""
+        """Search jobs on Jobberman with improved selectors"""
         jobs = []
         try:
+            # Build search URL - Jobberman uses different URL structure
             search_params = {
                 'q': keywords,
-                'l': location or 'Nigeria'
             }
+            
+            # Handle Nigerian locations better
+            if location:
+                nigerian_locations = {
+                    'lagos': 'Lagos',
+                    'abuja': 'Abuja',
+                    'calabar': 'Calabar',
+                    'port harcourt': 'Port Harcourt',
+                    'kano': 'Kano',
+                    'ibadan': 'Ibadan',
+                    'nigeria': 'Nigeria'
+                }
+                location_formatted = nigerian_locations.get(location.lower(), location)
+                search_params['location'] = location_formatted
             
             search_url = f"{self.base_url}/jobs?" + urlencode(search_params)
             logger.info(f"Searching Jobberman: {search_url}")
             
-            # Get page content
-            html_content = self._fetch_page(search_url)
-            if not html_content:
-                logger.error("Failed to fetch Jobberman search page")
-                return jobs
+            # Try multiple search approaches
+            job_urls = [
+                search_url,
+                f"{self.base_url}/search-jobs?q={keywords}",  # Alternative URL structure
+                f"{self.base_url}/jobs/search?keywords={keywords}"  # Another possible structure
+            ]
             
-            # Parse jobs
-            soup = BeautifulSoup(html_content, 'html.parser')
-            
-            # Look for job cards with various possible selectors
-            job_cards = soup.find_all(['div', 'article', 'li'], class_=lambda x: x and any(
-                keyword in x.lower() for keyword in ['job', 'listing', 'card', 'item'] if x
-            ))
-            
-            jobs_found = 0
-            for card in job_cards:
-                if jobs_found >= max_results:
-                    break
-                    
-                job_data = self._extract_job_data(card)
-                if job_data and self._is_valid_job(job_data):
-                    jobs.append(job_data)
-                    jobs_found += 1
+            for url in job_urls:
+                html_content = self._fetch_page(url)
+                if html_content:
+                    jobs = self._parse_jobs(html_content, max_results)
+                    if jobs:
+                        break
                     
         except Exception as e:
             logger.error(f"Error scraping Jobberman: {str(e)}")
@@ -61,32 +65,43 @@ class JobbermanScraper:
         return jobs
     
     def _fetch_page(self, url: str, max_retries: int = 3) -> Optional[str]:
-        """Fetch page content with proxy and anti-detection"""
+        """Fetch page content with enhanced anti-detection"""
         for attempt in range(max_retries):
             try:
                 # Get working proxy
                 proxy = self.proxy_manager.get_working_proxy() if self.proxy_manager.proxies else None
                 
-                # Get headers with Nigerian context
+                # Enhanced headers for Nigerian context
                 headers = self.ua_manager.get_headers()
                 headers.update({
                     'Accept-Language': 'en-NG,en;q=0.9,en-US;q=0.8',
-                    'Cache-Control': 'no-cache'
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache',
+                    'Sec-Fetch-Dest': 'document',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-Site': 'none',
+                    'Upgrade-Insecure-Requests': '1',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
                 })
                 
-                # Random delay
-                time.sleep(random.uniform(1, 4))
+                # Random delay between requests
+                time.sleep(random.uniform(2, 5))
                 
                 response = self.session.get(
                     url,
                     headers=headers,
                     proxies=proxy,
-                    timeout=20,
-                    allow_redirects=True
+                    timeout=25,
+                    allow_redirects=True,
+                    verify=True
                 )
                 
                 if response.status_code == 200:
+                    logger.debug(f"Successfully fetched {url}")
                     return response.text
+                elif response.status_code == 403:
+                    logger.warning(f"Blocked by Jobberman (403) - attempt {attempt + 1}")
+                    time.sleep(random.uniform(5, 10))
                 elif response.status_code == 429:  # Rate limited
                     wait_time = random.uniform(15, 30)
                     logger.warning(f"Rate limited, waiting {wait_time:.1f}s")
@@ -95,14 +110,72 @@ class JobbermanScraper:
                     logger.warning(f"HTTP {response.status_code} for {url}")
                     
             except Exception as e:
-                logger.warning(f"Attempt {attempt + 1} failed: {str(e)}")
+                logger.warning(f"Attempt {attempt + 1} failed for {url}: {str(e)}")
                 if attempt < max_retries - 1:
-                    time.sleep(random.uniform(3, 6))
+                    time.sleep(random.uniform(3, 8))
         
         return None
     
-    def _extract_job_data(self, card) -> Optional[Dict]:
-        """Extract job data from job card element"""
+    def _parse_jobs(self, html_content: str, max_results: int) -> List[Dict]:
+        """Parse jobs from HTML with multiple selector strategies"""
+        jobs = []
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        # Multiple selector strategies for different Jobberman layouts
+        selectors_to_try = [
+            # Current Jobberman selectors (2024/2025)
+            'div[data-testid="job-card"]',
+            '.job-card',
+            '.search-result',
+            '.job-item',
+            '.job-listing',
+            # Legacy selectors
+            'article.job',
+            'div.job',
+            '.job-result',
+            # Generic selectors
+            '[class*="job-"]',
+            '[class*="search-result"]',
+            '[class*="listing"]'
+        ]
+        
+        job_cards = []
+        for selector in selectors_to_try:
+            job_cards = soup.select(selector)
+            if job_cards:
+                logger.debug(f"Found {len(job_cards)} job cards with selector: {selector}")
+                break
+        
+        if not job_cards:
+            # Fallback: look for any div containing job-related keywords
+            all_divs = soup.find_all(['div', 'article', 'li'])
+            job_cards = [div for div in all_divs if self._has_job_indicators(div)]
+            logger.debug(f"Fallback found {len(job_cards)} potential job cards")
+        
+        jobs_found = 0
+        for card in job_cards:
+            if jobs_found >= max_results:
+                break
+                
+            job_data = self._extract_job_data_enhanced(card)
+            if job_data and self._is_valid_job(job_data):
+                jobs.append(job_data)
+                jobs_found += 1
+        
+        return jobs
+    
+    def _has_job_indicators(self, element) -> bool:
+        """Check if element contains job-related content"""
+        text = element.get_text().lower()
+        job_indicators = ['apply', 'salary', 'location', 'company', 'job', 'position', 'role']
+        class_str = ' '.join(element.get('class', [])).lower()
+        
+        return (any(indicator in text for indicator in job_indicators) and
+                len(text) > 50 and  # Must have substantial content
+                any(indicator in class_str for indicator in ['job', 'card', 'result', 'listing']))
+    
+    def _extract_job_data_enhanced(self, card) -> Optional[Dict]:
+        """Enhanced job data extraction with multiple fallback strategies"""
         try:
             job_data = {
                 'title': '',
@@ -115,88 +188,82 @@ class JobbermanScraper:
                 'source': 'Jobberman'
             }
             
-            # Title selectors
+            # Enhanced title extraction
             title_selectors = [
-                'h3 a',
-                'h2 a', 
-                '.job-title a',
-                '.title a',
-                'a[href*="/job/"]'
+                '[data-testid="job-title"]',
+                'h3 a', 'h2 a', 'h4 a',
+                '.job-title a', '.job-title',
+                '.title a', '.title',
+                'a[href*="/job"]',
+                'a[href*="/jobs/"]',
+                '[class*="title"] a',
+                '[class*="job-title"]'
             ]
             
             for selector in title_selectors:
                 title_elem = card.select_one(selector)
                 if title_elem:
-                    job_data['title'] = title_elem.get_text(strip=True)
-                    # Also get the link
-                    href = title_elem.get('href')
-                    if href:
-                        job_data['link'] = urljoin(self.base_url, href)
-                    break
+                    title_text = title_elem.get_text(strip=True)
+                    if len(title_text) > 3:  # Valid title should be longer than 3 chars
+                        job_data['title'] = title_text
+                        # Get link if available
+                        if title_elem.name == 'a':
+                            href = title_elem.get('href')
+                            if href:
+                                job_data['link'] = urljoin(self.base_url, href)
+                        break
             
-            # Company name
+            # Enhanced company extraction
             company_selectors = [
-                '.company-name',
-                '.employer',
-                '.company a',
-                'p.company',
-                '[class*="company"]'
+                '[data-testid="company-name"]',
+                '.company-name', '.company', '.employer',
+                '[class*="company"] a', '[class*="company"]',
+                '[class*="employer"]'
             ]
             
             for selector in company_selectors:
                 company_elem = card.select_one(selector)
                 if company_elem:
-                    job_data['company'] = company_elem.get_text(strip=True)
-                    break
+                    company_text = company_elem.get_text(strip=True)
+                    if len(company_text) > 1:
+                        job_data['company'] = company_text
+                        break
             
-            # Location
+            # Enhanced location extraction
             location_selectors = [
-                '.location',
-                '.job-location',
+                '[data-testid="job-location"]',
+                '.location', '.job-location',
                 '[class*="location"]',
-                'span[title*="Location"]'
+                '.address', '[class*="address"]'
             ]
             
             for selector in location_selectors:
                 location_elem = card.select_one(selector)
                 if location_elem:
-                    job_data['location'] = location_elem.get_text(strip=True)
-                    break
+                    location_text = location_elem.get_text(strip=True)
+                    if len(location_text) > 2:
+                        job_data['location'] = location_text
+                        break
             
-            # Salary
+            # Enhanced salary extraction
             salary_selectors = [
-                '.salary',
-                '.pay',
-                '[class*="salary"]',
-                '[class*="pay"]'
+                '[data-testid="salary"]',
+                '.salary', '.pay', '.wage',
+                '[class*="salary"]', '[class*="pay"]'
             ]
             
             for selector in salary_selectors:
                 salary_elem = card.select_one(selector)
                 if salary_elem:
                     salary_text = salary_elem.get_text(strip=True)
-                    if any(char in salary_text for char in ['₦', 'NGN', 'Naira', '$']):
+                    if any(currency in salary_text for currency in ['₦', 'NGN', 'Naira', '$', 'USD']):
                         job_data['salary'] = salary_text
                         break
             
-            # Job type
-            type_selectors = [
-                '.job-type',
-                '.type',
-                '[class*="type"]'
-            ]
-            
-            for selector in type_selectors:
-                type_elem = card.select_one(selector)
-                if type_elem:
-                    job_data['job_type'] = type_elem.get_text(strip=True)
-                    break
-            
-            # Description
+            # Enhanced description extraction
             desc_selectors = [
-                '.description',
-                '.summary',
-                '.snippet',
+                '.description', '.summary', '.snippet',
+                '[class*="description"]', '[class*="summary"]',
                 'p'
             ]
             
@@ -204,9 +271,31 @@ class JobbermanScraper:
                 desc_elem = card.select_one(selector)
                 if desc_elem:
                     desc_text = desc_elem.get_text(strip=True)
-                    if len(desc_text) > 50:  # Only take substantial descriptions
+                    if len(desc_text) > 20:  # Substantial description
                         job_data['description'] = desc_text[:200]
                         break
+            
+            # Job type extraction
+            type_selectors = [
+                '.job-type', '.type', '[class*="type"]',
+                '[data-testid="job-type"]'
+            ]
+            
+            for selector in type_selectors:
+                type_elem = card.select_one(selector)
+                if type_elem:
+                    type_text = type_elem.get_text(strip=True)
+                    if type_text.lower() in ['full-time', 'part-time', 'contract', 'freelance', 'temporary']:
+                        job_data['job_type'] = type_text
+                        break
+            
+            # If no link found yet, try to find any link in the card
+            if not job_data['link']:
+                link_elem = card.select_one('a[href]')
+                if link_elem:
+                    href = link_elem.get('href')
+                    if href and ('job' in href or 'position' in href):
+                        job_data['link'] = urljoin(self.base_url, href)
             
             return job_data if job_data['title'] else None
             
@@ -215,6 +304,19 @@ class JobbermanScraper:
             return None
     
     def _is_valid_job(self, job_data: Dict) -> bool:
-        """Check if job data is valid"""
-        required_fields = ['title', 'company']
-        return all(job_data.get(field, '').strip() for field in required_fields)
+        """Enhanced job validation"""
+        # Must have title and either company or location
+        has_title = job_data.get('title', '').strip() != ''
+        has_company = job_data.get('company', '').strip() != ''
+        has_location = job_data.get('location', '').strip() != ''
+        
+        # Title should be reasonable length and not contain spam indicators
+        if has_title:
+            title = job_data['title'].lower()
+            spam_indicators = ['click here', 'visit', 'http', 'www.', 'apply now only']
+            if any(spam in title for spam in spam_indicators):
+                return False
+            if len(job_data['title']) < 3 or len(job_data['title']) > 200:
+                return False
+        
+        return has_title and (has_company or has_location)

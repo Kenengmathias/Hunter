@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Hunter - Job Search Engine{% endblock %}</title>
-    <meta name="description" content="Hunter - The omnipresent job search engine that finds opportunities across the web">
+    <meta name="description" content="Hunter - Discover jobs across multiple platforms instantly">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
@@ -35,11 +35,6 @@
             font-size: 1.5rem;
         }
 
-        .hunter-icon {
-            color: var(--hunter-warning);
-            margin-right: 8px;
-        }
-
         .search-container {
             background: white;
             border-radius: 15px;
@@ -56,6 +51,8 @@
         .search-header h1 {
             color: var(--hunter-primary);
             font-weight: 600;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
         }
 
         .search-header p {
@@ -139,6 +136,13 @@
             font-weight: 500;
         }
 
+        /* Enhanced source badge colors */
+        .source-badge-indeed { background: #2557a7 !important; }
+        .source-badge-jobberman { background: #ff6b35 !important; }
+        .source-badge-jsearch { background: #10b981 !important; }
+        .source-badge-jooble { background: #8b5cf6 !important; }
+        .source-badge-adzuna { background: #f59e0b !important; }
+
         .job-type-badge {
             background: var(--hunter-warning);
             color: white;
@@ -180,6 +184,11 @@
             margin-bottom: 1.5rem;
         }
 
+        .hunter-icon {
+            color: var(--hunter-warning);
+            margin-right: 8px;
+        }
+
         @media (max-width: 768px) {
             .search-container {
                 margin: 1rem;
@@ -189,6 +198,10 @@
             .job-card {
                 margin-bottom: 1rem;
             }
+            
+            .search-header h1 {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
@@ -197,7 +210,6 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="fas fa-crosshairs hunter-icon"></i>
                 Hunter
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -245,8 +257,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h5><i class="fas fa-crosshairs hunter-icon"></i>Hunter Job Search</h5>
-                    <p class="mb-0">The omnipresent job search engine that finds opportunities across the web.</p>
+                    <h5>Hunter Job Search</h5>
+                    <p class="mb-0">Discover jobs across multiple platforms instantly.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <p class="mb-0">

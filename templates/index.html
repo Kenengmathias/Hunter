@@ -6,8 +6,8 @@
 <!-- Search Section -->
 <div class="search-container">
     <div class="search-header">
-        <h1><i class="fas fa-crosshairs hunter-icon"></i>Hunter Job Search</h1>
-        <p>Your omnipresent job hunting companion. Search across multiple platforms instantly.</p>
+        <h1>Discover jobs across multiple platforms instantly.</h1>
+        <p>Search across Indeed, Jobberman, JSearch, Jooble, and Adzuna simultaneously.</p>
     </div>
 
     <form method="POST" id="search-form">
@@ -35,7 +35,7 @@
                        class="form-control" 
                        id="location" 
                        name="location" 
-                       placeholder="e.g., Calabar, Lagos, Remote"
+                       placeholder="e.g., Nigeria, Lagos, Calabar, UK, Remote"
                        value="{{ request.form.get('location', '') }}">
             </div>
         </div>
@@ -77,7 +77,7 @@
                                name="include_local"
                                {{ 'checked' if request.form.get('include_local') else '' }}>
                         <label class="form-check-label" for="include_local">
-                            <i class="fas fa-map-pin me-1"></i>Include Local Jobs
+                            <i class="fas fa-map-pin me-1"></i>Include Local Jobs (Nigeria)
                         </label>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
         <!-- Search Button -->
         <div class="text-center mt-4">
             <button type="submit" class="btn btn-hunter btn-lg">
-                <i class="fas fa-search me-2"></i>Hunt for Jobs
+                <i class="fas fa-search me-2"></i>Search Jobs
             </button>
         </div>
     </form>
@@ -105,8 +105,8 @@
         <span class="visually-hidden">Searching...</span>
     </div>
     <h5 class="mt-3">
-        <i class="fas fa-crosshairs hunter-icon"></i>
-        Hunting across multiple job platforms...
+        <i class="fas fa-search hunter-icon"></i>
+        Searching across multiple job platforms...
     </h5>
     <p class="text-muted">This may take a few seconds as we search everywhere for you.</p>
 </div>
@@ -180,8 +180,9 @@
                             </div>
 
                             <div class="col-md-4 text-md-end">
-                                <!-- Source Badge -->
-                                <span class="job-source mb-2 d-inline-block">{{ job.source }}</span>
+                                <!-- Enhanced Source Badge with Colors -->
+                                {% set source_class = 'source-badge-' + job.source.lower() %}
+                                <span class="job-source mb-2 d-inline-block {{ source_class }}">{{ job.source }}</span>
                                 
                                 <!-- Relevance Score (for debugging) -->
                                 {% if job.relevance_score %}
@@ -232,8 +233,8 @@
                 <h6><i class="fas fa-lightbulb me-2"></i>Search Tips:</h6>
                 <ul class="list-unstyled">
                     <li>• Try broader job titles (e.g., "Developer" instead of "Senior React Developer")</li>
+                    <li>• For Nigerian jobs: Use "Lagos", "Abuja", "Calabar" or check "Include Local Jobs"</li>
                     <li>• Include alternative locations or try "Remote"</li>
-                    <li>• Check the "Include Local Jobs" option for Nigerian opportunities</li>
                     <li>• Use different variations of your job title</li>
                 </ul>
             </div>
@@ -245,37 +246,59 @@
 <div class="welcome-section text-center mt-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <h2><i class="fas fa-rocket me-2"></i>Ready to Hunt for Your Dream Job?</h2>
+            <h2><i class="fas fa-rocket me-2"></i>Ready to Find Your Dream Job?</h2>
             <p class="lead">Hunter searches across multiple job platforms simultaneously, giving you access to opportunities from:</p>
             
             <div class="row mt-4">
-                <div class="col-md-3 col-6 mb-3">
+                <div class="col-md-2 col-6 mb-3">
                     <div class="text-center">
                         <i class="fas fa-globe fa-2x text-primary mb-2"></i>
                         <h6>Indeed</h6>
                         <small class="text-muted">Global & Nigeria</small>
                     </div>
                 </div>
-                <div class="col-md-3 col-6 mb-3">
+                <div class="col-md-2 col-6 mb-3">
                     <div class="text-center">
                         <i class="fas fa-map-marker-alt fa-2x text-success mb-2"></i>
                         <h6>Jobberman</h6>
                         <small class="text-muted">Nigerian Jobs</small>
                     </div>
                 </div>
-                <div class="col-md-3 col-6 mb-3">
+                <div class="col-md-2 col-6 mb-3">
                     <div class="text-center">
                         <i class="fas fa-search fa-2x text-warning mb-2"></i>
                         <h6>JSearch</h6>
                         <small class="text-muted">AI-Powered</small>
                     </div>
                 </div>
-                <div class="col-md-3 col-6 mb-3">
+                <div class="col-md-2 col-6 mb-3">
                     <div class="text-center">
-                        <i class="fas fa-plus fa-2x text-info mb-2"></i>
-                        <h6>More APIs</h6>
-                        <small class="text-muted">Jooble & Adzuna</small>
+                        <i class="fas fa-briefcase fa-2x text-info mb-2"></i>
+                        <h6>Jooble</h6>
+                        <small class="text-muted">Global Search</small>
                     </div>
+                </div>
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="text-center">
+                        <i class="fas fa-star fa-2x text-danger mb-2"></i>
+                        <h6>Adzuna</h6>
+                        <small class="text-muted">Smart Matching</small>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="text-center">
+                        <i class="fas fa-plus fa-2x text-secondary mb-2"></i>
+                        <h6>More</h6>
+                        <small class="text-muted">Coming Soon</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="alert alert-success">
+                    <i class="fas fa-flag-checkered me-2"></i>
+                    <strong>Special Focus on Nigerian Jobs!</strong><br>
+                    Use locations like "Lagos", "Abuja", "Calabar" or enable "Include Local Jobs" for the best Nigerian job results.
                 </div>
             </div>
         </div>
@@ -298,20 +321,26 @@
         // });
     }
 
-    // Auto-suggest for locations (placeholder)
+    // Auto-suggest for locations
     document.addEventListener('DOMContentLoaded', function() {
         const locationInput = document.getElementById('location');
         const nigerianCities = [
             'Lagos', 'Abuja', 'Kano', 'Ibadan', 'Calabar', 'Port Harcourt',
             'Benin City', 'Jos', 'Ilorin', 'Owerri', 'Enugu', 'Abeokuta',
-            'Onitsha', 'Warri', 'Sokoto', 'Kaduna', 'Maiduguri', 'Zaria'
+            'Onitsha', 'Warri', 'Sokoto', 'Kaduna', 'Maiduguri', 'Zaria', 'Nigeria'
         ];
         
-        // Simple autocomplete placeholder
-        locationInput.addEventListener('input', function() {
-            const value = this.value.toLowerCase();
-            // This is where you'd implement autocomplete
-            // For now, it's just a placeholder for future enhancement
+        const internationalLocations = [
+            'Remote', 'UK', 'United Kingdom', 'USA', 'United States', 'Canada', 'Germany', 'Australia'
+        ];
+        
+        // Simple placeholder for future autocomplete enhancement
+        locationInput.addEventListener('focus', function() {
+            this.placeholder = 'Popular: Lagos, Abuja, Calabar, UK, Remote';
+        });
+        
+        locationInput.addEventListener('blur', function() {
+            this.placeholder = 'e.g., Nigeria, Lagos, Calabar, UK, Remote';
         });
     });
 </script>
