@@ -144,7 +144,7 @@ class APIManager:
                     salary_currency = job.get('job_salary_currency', 'USD')
                     
                     if salary_min and salary_max:
-                        currency_symbol = ' if salary_currency == 'USD' else '₦' if salary_currency == 'NGN' else salary_currency
+                        currency_symbol = '$' if salary_currency == 'USD' else '₦' if salary_currency == 'NGN' else salary_currency
                         salary = f"{currency_symbol}{salary_min:,} - {currency_symbol}{salary_max:,}"
                     
                     jobs.append({

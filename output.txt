@@ -1,2 +1,69 @@
-fatal: not a git repository (or any parent up to mount point /)
-Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+🏹 Starting Hunter Job Search Engine...
+==================================
+✅ Virtual environment found
+./run_hunter.sh: line 28: .venv/bin/activate: No such file or directory
+📦 Checking dependencies...
+
+🔧 Configuration Check:
+======================
+✅ All API keys configured
+✅ Proxy list configured
+
+🚀 Starting Hunter Job Search Engine...
+======================================
+Access your job search engine at: http://localhost:8000
+Press Ctrl+C to stop the server
+
+2025-09-27 17:02:48,541 - __main__ - INFO - Starting Hunter Job Search on 0.0.0.0:8000
+ * Serving Flask app 'app'
+ * Debug mode: off
+2025-09-27 17:02:48,542 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://10.0.0.130:8000
+2025-09-27 17:02:48,542 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-27 17:03:02,887 - __main__ - INFO - GET / - 127.0.0.1
+2025-09-27 17:03:02,905 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 17:03:02] "GET / HTTP/1.1" 200 -
+2025-09-27 17:04:30,710 - __main__ - INFO - GET /health - 127.0.0.1
+2025-09-27 17:04:30,711 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 17:04:30] "GET /health HTTP/1.1" 200 -
+2025-09-27 17:04:50,251 - __main__ - INFO - GET / - 127.0.0.1
+2025-09-27 17:04:50,251 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 17:04:50] "GET / HTTP/1.1" 200 -
+2025-09-27 17:05:33,586 - __main__ - INFO - GET / - 127.0.0.1
+2025-09-27 17:05:33,587 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 17:05:33] "GET / HTTP/1.1" 200 -
+2025-09-27 17:07:29,328 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-27 17:07:29,328 - __main__ - INFO - Job search: 'Accounting' in 'Nigeria' type:'fulltime' local:True
+2025-09-27 17:07:29,334 - jobberman_scraper - INFO - Searching Jobberman: https://www.jobberman.com/jobs?q=Accounting&l=Nigeria
+2025-09-27 17:07:29,335 - indeed_scraper - INFO - Searching Indeed: https://ng.indeed.com/jobs?q=Accounting&l=Nigeria&start=0&jt=fulltime
+2025-09-27 17:07:29,685 - api_manager - ERROR - JSearch API error: 403
+2025-09-27 17:07:29,686 - job_aggregator - INFO - JSearch API: Found 0 jobs
+2025-09-27 17:07:29,818 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-27 17:07:29,962 - api_manager - ERROR - Adzuna API error: 404
+2025-09-27 17:07:29,963 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-27 17:07:33,713 - indeed_scraper - WARNING - HTTP 403 for https://ng.indeed.com/jobs?q=Accounting&l=Nigeria&start=0&jt=fulltime
+2025-09-27 17:07:35,470 - jobberman_scraper - INFO - Jobberman scraper found 0 jobs
+2025-09-27 17:07:35,471 - job_aggregator - INFO - Jobberman: Found 0 jobs
+2025-09-27 17:07:36,768 - indeed_scraper - WARNING - HTTP 403 for https://ng.indeed.com/jobs?q=Accounting&l=Nigeria&start=0&jt=fulltime
+2025-09-27 17:07:40,025 - indeed_scraper - WARNING - HTTP 403 for https://ng.indeed.com/jobs?q=Accounting&l=Nigeria&start=0&jt=fulltime
+2025-09-27 17:07:40,025 - indeed_scraper - ERROR - Failed to fetch Indeed search page
+2025-09-27 17:07:40,025 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-27 17:07:40,026 - job_aggregator - INFO - Total jobs found: 0, Unique jobs: 0
+2025-09-27 17:07:40,027 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 17:07:40] "POST / HTTP/1.1" 200 -
+2025-09-27 17:07:51,208 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-27 17:07:51,208 - __main__ - INFO - Job search: 'Accounting' in 'China' type:'fulltime' local:True
+2025-09-27 17:07:51,212 - jobberman_scraper - INFO - Searching Jobberman: https://www.jobberman.com/jobs?q=Accounting&l=China
+2025-09-27 17:07:51,214 - indeed_scraper - INFO - Searching Indeed: https://indeed.com/jobs?q=Accounting&l=China&start=0&jt=fulltime
+2025-09-27 17:07:51,510 - job_aggregator - INFO - Jooble API: Found 5 jobs
+2025-09-27 17:07:51,641 - api_manager - ERROR - JSearch API error: 403
+2025-09-27 17:07:51,642 - job_aggregator - INFO - JSearch API: Found 0 jobs
+2025-09-27 17:07:51,976 - job_aggregator - INFO - Adzuna API: Found 5 jobs
+2025-09-27 17:07:54,263 - indeed_scraper - WARNING - HTTP 403 for https://indeed.com/jobs?q=Accounting&l=China&start=0&jt=fulltime
+2025-09-27 17:07:54,711 - jobberman_scraper - INFO - Jobberman scraper found 0 jobs
+2025-09-27 17:07:54,711 - job_aggregator - INFO - Jobberman: Found 0 jobs
+2025-09-27 17:07:56,051 - indeed_scraper - WARNING - HTTP 403 for https://indeed.com/jobs?q=Accounting&l=China&start=0&jt=fulltime
+2025-09-27 17:08:01,503 - indeed_scraper - WARNING - HTTP 403 for https://indeed.com/jobs?q=Accounting&l=China&start=0&jt=fulltime
+2025-09-27 17:08:01,503 - indeed_scraper - ERROR - Failed to fetch Indeed search page
+2025-09-27 17:08:01,503 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-27 17:08:01,504 - job_aggregator - INFO - Total jobs found: 10, Unique jobs: 10
+2025-09-27 17:08:01,506 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 17:08:01] "POST / HTTP/1.1" 200 -
+2025-09-27 17:09:45,797 - __main__ - INFO - GET / - 127.0.0.1
+2025-09-27 17:09:45,798 - werkzeug - INFO - 127.0.0.1 - - [27/Sep/2025 17:09:45] "GET / HTTP/1.1" 200 -

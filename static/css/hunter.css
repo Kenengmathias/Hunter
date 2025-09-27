@@ -1,0 +1,40 @@
+/* Hunter Job Search - Additional Custom Styles */
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.job-card-hover-effect {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.job-card-hover-effect:hover {
+    transform: translateY(-4px) scale(1.02);
+}
+
+.source-badge-indeed { background: #2557a7; }
+.source-badge-jobberman { background: #ff6b35; }
+.source-badge-jsearch { background: #10b981; }
+.source-badge-jooble { background: #8b5cf6; }
+.source-badge-adzuna { background: #f59e0b; }
+
+/* Mobile optimizations */
+@media (max-width: 576px) {
+    .search-container {
+        padding: 1rem;
+    }
+    
+    .job-card {
+        margin-bottom: 1rem;
+    }
+    
+    .job-title {
+        font-size: 1rem;
+    }
+}

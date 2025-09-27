@@ -4,37 +4,294 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Hunter - Job Search Engine{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="description" content="Hunter - The omnipresent job search engine that finds opportunities across the web">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --hunter-primary: #2c3e50;
+            --hunter-secondary: #3498db;
+            --hunter-success: #27ae60;
+            --hunter-warning: #f39c12;
+            --hunter-danger: #e74c3c;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--hunter-primary), var(--hunter-secondary));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .hunter-icon {
+            color: var(--hunter-warning);
+            margin-right: 8px;
+        }
+
+        .search-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .search-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .search-header h1 {
+            color: var(--hunter-primary);
+            font-weight: 600;
+        }
+
+        .search-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--hunter-secondary);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+
+        .btn-hunter {
+            background: linear-gradient(135deg, var(--hunter-secondary), var(--hunter-primary));
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-hunter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .job-card {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .job-title {
+            color: var(--hunter-primary);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .job-title:hover {
+            color: var(--hunter-secondary);
+        }
+
+        .job-company {
+            color: var(--hunter-secondary);
+            font-weight: 500;
+        }
+
+        .job-location {
+            color: #6c757d;
+        }
+
+        .job-salary {
+            color: var(--hunter-success);
+            font-weight: 600;
+        }
+
+        .job-source {
+            background: var(--hunter-secondary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .job-type-badge {
+            background: var(--hunter-warning);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .footer {
+            background: var(--hunter-primary);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner-grow {
+            color: var(--hunter-secondary);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 8px;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .job-card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header class="header">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <h1 class="logo">🎯 Hunter</h1>
-            <p class="tagline">Omnipresent Job Search</p>
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-crosshairs hunter-icon"></i>
+                Hunter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <i class="fas fa-search me-1"></i>Search Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('health') }}" target="_blank">
+                            <i class="fas fa-heart-pulse me-1"></i>Status
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="main">
-        <div class="container">
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <div class="alerts">
-                        {% for message in messages %}
-                            <div class="alert">{{ message }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="mt-3">
+                    {% for message in messages %}
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-            {% block content %}{% endblock %}
-        </div>
+        {% block content %}{% endblock %}
     </main>
 
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Hunter Job Search. Finding opportunities everywhere.</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-crosshairs hunter-icon"></i>Hunter Job Search</h5>
+                    <p class="mb-0">The omnipresent job search engine that finds opportunities across the web.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <i class="fas fa-globe me-2"></i>Searching globally and locally
+                    </p>
+                    <small class="text-muted">Built for job seekers everywhere</small>
+                </div>
+            </div>
         </div>
     </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Show loading animation on form submit
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('search-form');
+            const loadingDiv = document.getElementById('loading');
+            
+            if (searchForm && loadingDiv) {
+                searchForm.addEventListener('submit', function() {
+                    loadingDiv.classList.add('show');
+                    // Scroll to loading
+                    loadingDiv.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
+
+        // Job card click analytics (placeholder)
+        function trackJobClick(source, title) {
+            console.log(`Job clicked: ${title} from ${source}`);
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
 </body>
 </html>
