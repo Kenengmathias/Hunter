@@ -313,7 +313,7 @@ class IndeedScraper:
                     if job_data['location']:
                         break
             
-            # Extract salary
+            # Extract salary with fixed currency symbols
             salary_selectors = [
                 '.salary-snippet',
                 '[data-testid*="salary"]',
@@ -325,7 +325,9 @@ class IndeedScraper:
                 salary_elem = card.select_one(selector)
                 if salary_elem:
                     salary_text = salary_elem.get_text(strip=True)
-                    if any(currency in salary_text for currency in ['₦', ', '€', '£', 'USD', 'NGN', 'GBP']):
+                    # Fixed currency list - using Unicode escapes for special characters
+                    currency_symbols = ['\u20A6', '$', '\u20AC', '\u00A3', 'USD', 'NGN', 'GBP', 'EUR']  # ₦, $, €, £
+                    if any(currency in salary_text for currency in currency_symbols):
                         job_data['salary'] = salary_text
                         break
             
