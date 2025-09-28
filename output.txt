@@ -1,36 +1,154 @@
-URL gone (410): https://www.jobberman.com/search?q=Developer
-🧪 Testing Individual Job Sources
-========================================
+🏹 Starting Hunter Job Search Engine...
+==================================
+✅ Virtual environment found
+./run_hunter.sh: line 28: .venv/bin/activate: No such file or directory
+📦 Checking dependencies...
 
-🔍 Testing: 'Developer' in 'Nigeria'
-------------------------------
-✅ JSearch: 3 jobs
-   Sample: Flutter Developer at CourierPlus Services Nigeria
-✅ Jooble: 0 jobs
-✅ Adzuna: 0 jobs
+🔧 Configuration Check:
+======================
+✅ All API keys configured
+✅ Proxy list configured
 
-🔍 Testing: 'Developer' in 'UK'
-------------------------------
-✅ JSearch: 3 jobs
-   Sample: Senior Full Stack Developer (React OR Angular) - £60,000-£65,000 - Hybrid (1 day a week onsite) at Ascentia Partners
-✅ Jooble: 2 jobs
-   Sample: Oracle Application Express (APEX) Developer at GD Mission Systems
-✅ Adzuna: 3 jobs
-   Sample: Business Development Manager at Arrow Electronics, Inc.
+🚀 Starting Hunter Job Search Engine...
+======================================
+Access your job search engine at: http://localhost:8000
+Press Ctrl+C to stop the server
 
-🔍 Testing: 'Marketing' in 'Remote'
-------------------------------
-✅ JSearch: 3 jobs
-   Sample: Digital & Brand Analytics Mgr - 90231521 - Washington at Amtrak
-✅ Jooble: 3 jobs
-   Sample: Ecommerce and Digital Marketing Manager at Blinds To Go
-✅ Adzuna: 3 jobs
-   Sample: Director, Wholesale Marketing at Global Partners
-
-🧪 Testing Jobberman Scraper
-------------------------------
-✅ Jobberman: 3 jobs
-   1. placeholder at Find a Job
-   2. Search Filter at Homepage
-
-✅ Individual testing complete!
+/usr/local/python/3.12.1/lib/python3.12/site-packages/playwright_stealth/stealth.py:6: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+2025-09-28 22:00:09,916 - __main__ - INFO - Starting Hunter Job Search on 0.0.0.0:8000
+ * Serving Flask app 'app'
+ * Debug mode: off
+2025-09-28 22:00:09,917 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://10.0.0.27:8000
+2025-09-28 22:00:09,917 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-28 22:01:27,640 - __main__ - INFO - GET / - 127.0.0.1
+2025-09-28 22:01:27,665 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 22:01:27] "GET / HTTP/1.1" 200 -
+2025-09-28 22:01:28,433 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2025-09-28 22:01:28,433 - __main__ - WARNING - 404 Error: http://localhost:8000/favicon.ico
+2025-09-28 22:01:28,434 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 22:01:28] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-09-28 22:02:09,906 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 22:02:09,907 - __main__ - INFO - Job search: 'Marketing' in 'Nigeria' type:'all' local:True
+2025-09-28 22:02:09,907 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 22:02:09,908 - job_aggregator - INFO - Starting job search: 'Marketing' in 'Nigeria'
+2025-09-28 22:02:09,911 - jobberman_scraper - INFO - Searching Jobberman for: Marketing in Nigeria
+2025-09-28 22:02:09,913 - indeed_scraper - INFO - Indeed scraper starting: https://ng.indeed.com/jobs?q=Marketing&l=Nigeria&start=0&sort=relevance
+2025-09-28 22:02:10,371 - api_manager - INFO - Jooble found 0 jobs for 'Marketing' in 'Nigeria'
+2025-09-28 22:02:10,373 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-28 22:02:10,482 - api_manager - INFO - Adzuna found 0 jobs for 'Marketing' in 'Nigeria'
+2025-09-28 22:02:10,484 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-28 22:02:13,753 - api_manager - INFO - JSearch found 5 jobs for 'Marketing' in 'Nigeria'
+2025-09-28 22:02:13,756 - job_aggregator - INFO - JSearch API: Found 5 jobs
+2025-09-28 22:02:14,238 - jobberman_scraper - WARNING - URL gone (410): https://www.jobberman.com/search?q=Marketing
+2025-09-28 22:02:17,985 - jobberman_scraper - INFO - Found jobs with flexible parsing
+2025-09-28 22:02:17,985 - jobberman_scraper - INFO - Jobberman scraper found 5 jobs
+2025-09-28 22:02:17,985 - job_aggregator - INFO - Jobberman: Found 5 jobs
+2025-09-28 22:02:25,815 - indeed_scraper - WARNING - Playwright Indeed search failed: 'Page' object has no attribute 'set_user_agent'
+2025-09-28 22:02:25,817 - indeed_scraper - INFO - Indeed scraper found 0 jobs
+2025-09-28 22:02:25,817 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 22:02:25,817 - job_aggregator - INFO - Search completed in 15.9s: 10 total, 9 unique jobs
+2025-09-28 22:02:25,818 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 22:02:25] "POST / HTTP/1.1" 200 -
+2025-09-28 22:05:34,918 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 22:05:34,919 - __main__ - INFO - Job search: 'Marketing' in 'Nigeria' type:'all' local:True
+2025-09-28 22:05:34,919 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 22:05:34,921 - job_aggregator - INFO - Starting job search: 'Marketing' in 'Nigeria'
+2025-09-28 22:05:34,924 - jobberman_scraper - INFO - Searching Jobberman for: Marketing in Nigeria
+2025-09-28 22:05:34,925 - indeed_scraper - INFO - Indeed scraper starting: https://ng.indeed.com/jobs?q=Marketing&l=Nigeria&start=0&sort=relevance
+2025-09-28 22:05:35,475 - indeed_scraper - WARNING - Playwright Indeed search failed: 'Page' object has no attribute 'set_user_agent'
+2025-09-28 22:05:35,476 - indeed_scraper - INFO - Indeed scraper found 0 jobs
+2025-09-28 22:05:35,476 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 22:05:35,559 - api_manager - INFO - Adzuna found 0 jobs for 'Marketing' in 'Nigeria'
+2025-09-28 22:05:35,560 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-28 22:05:35,714 - api_manager - INFO - Jooble found 0 jobs for 'Marketing' in 'Nigeria'
+2025-09-28 22:05:35,715 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-28 22:05:37,031 - api_manager - INFO - JSearch found 5 jobs for 'Marketing' in 'Nigeria'
+2025-09-28 22:05:37,032 - job_aggregator - INFO - JSearch API: Found 5 jobs
+2025-09-28 22:05:39,030 - jobberman_scraper - WARNING - URL gone (410): https://www.jobberman.com/search?q=Marketing
+2025-09-28 22:05:42,243 - jobberman_scraper - INFO - Found jobs with flexible parsing
+2025-09-28 22:05:42,244 - jobberman_scraper - INFO - Jobberman scraper found 5 jobs
+2025-09-28 22:05:42,244 - job_aggregator - INFO - Jobberman: Found 5 jobs
+2025-09-28 22:05:42,246 - job_aggregator - INFO - Search completed in 7.3s: 10 total, 9 unique jobs
+2025-09-28 22:05:42,250 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 22:05:42] "POST / HTTP/1.1" 200 -
+2025-09-28 22:06:45,225 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 22:06:45,225 - __main__ - INFO - Job search: 'Accountant' in 'Lagos' type:'all' local:True
+2025-09-28 22:06:45,225 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 22:06:45,226 - job_aggregator - INFO - Starting job search: 'Accountant' in 'Lagos'
+2025-09-28 22:06:45,230 - jobberman_scraper - INFO - Searching Jobberman for: Accountant in Lagos
+2025-09-28 22:06:45,231 - indeed_scraper - INFO - Indeed scraper starting: https://ng.indeed.com/jobs?q=Accountant&l=Lagos&start=0&sort=relevance
+2025-09-28 22:06:45,459 - api_manager - INFO - Jooble found 0 jobs for 'Accountant' in 'Lagos'
+2025-09-28 22:06:45,461 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-28 22:06:45,766 - indeed_scraper - WARNING - Playwright Indeed search failed: 'Page' object has no attribute 'set_user_agent'
+2025-09-28 22:06:45,767 - indeed_scraper - INFO - Indeed scraper found 0 jobs
+2025-09-28 22:06:45,767 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 22:06:45,868 - api_manager - INFO - Adzuna found 0 jobs for 'Accountant' in 'Lagos'
+2025-09-28 22:06:45,869 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-28 22:06:46,979 - api_manager - INFO - JSearch found 5 jobs for 'Accountant' in 'Lagos'
+2025-09-28 22:06:46,980 - job_aggregator - INFO - JSearch API: Found 5 jobs
+2025-09-28 22:06:49,351 - jobberman_scraper - WARNING - URL gone (410): https://www.jobberman.com/search?q=Accountant
+2025-09-28 22:06:53,388 - jobberman_scraper - INFO - Found jobs with flexible parsing
+2025-09-28 22:06:53,388 - jobberman_scraper - INFO - Jobberman scraper found 5 jobs
+2025-09-28 22:06:53,388 - job_aggregator - INFO - Jobberman: Found 5 jobs
+2025-09-28 22:06:53,389 - job_aggregator - INFO - Search completed in 8.2s: 10 total, 9 unique jobs
+2025-09-28 22:06:53,391 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 22:06:53] "POST / HTTP/1.1" 200 -
+2025-09-28 22:09:25,393 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 22:09:25,394 - __main__ - INFO - Job search: 'Vibe Coder' in 'Remote' type:'all' local:False
+2025-09-28 22:09:25,394 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 22:09:25,394 - job_aggregator - INFO - Starting job search: 'Vibe Coder' in 'Remote'
+2025-09-28 22:09:25,397 - indeed_scraper - INFO - Indeed scraper starting: https://indeed.com/jobs?q=Vibe+Coder&l=Remote&start=0&sort=relevance
+2025-09-28 22:09:25,901 - api_manager - INFO - Jooble found 5 jobs for 'Vibe Coder' in 'Remote'
+2025-09-28 22:09:25,902 - job_aggregator - INFO - Jooble API: Found 5 jobs
+2025-09-28 22:09:25,949 - indeed_scraper - WARNING - Playwright Indeed search failed: 'Page' object has no attribute 'set_user_agent'
+2025-09-28 22:09:25,950 - indeed_scraper - INFO - Indeed scraper found 0 jobs
+2025-09-28 22:09:25,950 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 22:09:26,162 - api_manager - INFO - Adzuna found 5 jobs for 'Vibe Coder' in 'Remote'
+2025-09-28 22:09:26,163 - job_aggregator - INFO - Adzuna API: Found 5 jobs
+2025-09-28 22:09:27,111 - api_manager - INFO - JSearch found 2 jobs for 'Vibe Coder' in 'Remote'
+2025-09-28 22:09:27,112 - job_aggregator - INFO - JSearch API: Found 2 jobs
+2025-09-28 22:09:27,113 - job_aggregator - INFO - Search completed in 1.7s: 12 total, 11 unique jobs
+2025-09-28 22:09:27,114 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 22:09:27] "POST / HTTP/1.1" 200 -
+2025-09-28 22:12:39,754 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 22:12:39,755 - __main__ - INFO - Job search: 'Vibe Coder' in 'Calabar, Nigeria' type:'all' local:False
+2025-09-28 22:12:39,755 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 22:12:39,756 - job_aggregator - INFO - Starting job search: 'Vibe Coder' in 'Calabar, Nigeria'
+2025-09-28 22:12:39,760 - jobberman_scraper - INFO - Searching Jobberman for: Vibe Coder in Calabar, Nigeria
+2025-09-28 22:12:39,760 - indeed_scraper - INFO - Indeed scraper starting: https://ng.indeed.com/jobs?q=Vibe+Coder&l=Calabar,+Nigeria&start=0&sort=relevance
+2025-09-28 22:12:40,319 - indeed_scraper - WARNING - Playwright Indeed search failed: 'Page' object has no attribute 'set_user_agent'
+2025-09-28 22:12:40,320 - indeed_scraper - INFO - Indeed scraper found 0 jobs
+2025-09-28 22:12:40,321 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 22:12:40,334 - api_manager - INFO - Jooble found 0 jobs for 'Vibe Coder' in 'Calabar, Nigeria'
+2025-09-28 22:12:40,335 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-28 22:12:40,451 - api_manager - INFO - Adzuna found 0 jobs for 'Vibe Coder' in 'Calabar, Nigeria'
+2025-09-28 22:12:40,452 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-28 22:12:44,310 - jobberman_scraper - WARNING - URL gone (410): https://www.jobberman.com/search?q=Vibe Coder
+2025-09-28 22:12:45,662 - api_manager - INFO - JSearch returned no job data
+2025-09-28 22:12:45,664 - job_aggregator - INFO - JSearch API: Found 0 jobs
+2025-09-28 22:12:48,616 - jobberman_scraper - INFO - Found jobs with flexible parsing
+2025-09-28 22:12:48,616 - jobberman_scraper - INFO - Jobberman scraper found 5 jobs
+2025-09-28 22:12:48,616 - job_aggregator - INFO - Jobberman: Found 5 jobs
+2025-09-28 22:12:48,617 - job_aggregator - INFO - Search completed in 8.9s: 5 total, 4 unique jobs
+2025-09-28 22:12:48,618 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 22:12:48] "POST / HTTP/1.1" 200 -
+2025-09-28 22:14:02,376 - __main__ - INFO - GET /health - 127.0.0.1
+2025-09-28 22:14:02,376 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 22:14:02] "GET /health HTTP/1.1" 200 -
+2025-09-28 22:20:27,550 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 22:20:27,551 - __main__ - INFO - Job search: 'Pharmacologist' in 'Nigeria' type:'all' local:True
+2025-09-28 22:20:27,551 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 22:20:27,551 - job_aggregator - INFO - Starting job search: 'Pharmacologist' in 'Nigeria'
+2025-09-28 22:20:27,555 - jobberman_scraper - INFO - Searching Jobberman for: Pharmacologist in Nigeria
+2025-09-28 22:20:27,557 - indeed_scraper - INFO - Indeed scraper starting: https://ng.indeed.com/jobs?q=Pharmacologist&l=Nigeria&start=0&sort=relevance
+2025-09-28 22:20:27,852 - api_manager - INFO - Jooble found 0 jobs for 'Pharmacologist' in 'Nigeria'
+2025-09-28 22:20:27,859 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-28 22:20:28,107 - indeed_scraper - WARNING - Playwright Indeed search failed: 'Page' object has no attribute 'set_user_agent'
+2025-09-28 22:20:28,107 - indeed_scraper - INFO - Indeed scraper found 0 jobs
+2025-09-28 22:20:28,108 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 22:20:28,160 - api_manager - INFO - Adzuna found 0 jobs for 'Pharmacologist' in 'Nigeria'
+2025-09-28 22:20:28,161 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-28 22:20:29,418 - jobberman_scraper - WARNING - URL gone (410): https://www.jobberman.com/search?q=Pharmacologist
+2025-09-28 22:20:30,287 - api_manager - INFO - JSearch found 5 jobs for 'Pharmacologist' in 'Nigeria'
+2025-09-28 22:20:30,288 - job_aggregator - INFO - JSearch API: Found 5 jobs
+2025-09-28 22:20:33,913 - jobberman_scraper - INFO - Found jobs with flexible parsing
+2025-09-28 22:20:33,913 - jobberman_scraper - INFO - Jobberman scraper found 5 jobs
+2025-09-28 22:20:33,913 - job_aggregator - INFO - Jobberman: Found 5 jobs
+2025-09-28 22:20:33,914 - job_aggregator - INFO - Search completed in 6.4s: 10 total, 9 unique jobs
+2025-09-28 22:20:33,916 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 22:20:33] "POST / HTTP/1.1" 200 -
