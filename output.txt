@@ -14,77 +14,11 @@
 Access your job search engine at: http://localhost:8000
 Press Ctrl+C to stop the server
 
-2025-09-28 09:22:40,743 - __main__ - INFO - Starting Hunter Job Search on 0.0.0.0:8000
+2025-09-28 11:06:29,988 - __main__ - INFO - Starting Hunter Job Search on 0.0.0.0:8000
  * Serving Flask app 'app'
  * Debug mode: off
-2025-09-28 09:22:40,745 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2025-09-28 11:06:29,990 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:8000
- * Running on http://10.0.0.230:8000
-2025-09-28 09:22:40,745 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
-2025-09-28 09:23:08,911 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
-2025-09-28 09:23:08,911 - __main__ - WARNING - 404 Error: http://localhost:8000/favicon.ico
-2025-09-28 09:23:08,932 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 09:23:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-2025-09-28 09:23:10,151 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 09:23:10,152 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 09:23:10] "GET / HTTP/1.1" 200 -
-2025-09-28 09:23:15,686 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 09:23:15,687 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 09:23:15] "GET / HTTP/1.1" 200 -
-2025-09-28 09:23:28,294 - __main__ - INFO - GET /health - 127.0.0.1
-2025-09-28 09:23:28,294 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 09:23:28] "GET /health HTTP/1.1" 200 -
-2025-09-28 09:24:07,830 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 09:24:07,831 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 09:24:07] "GET / HTTP/1.1" 200 -
-2025-09-28 09:24:16,594 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 09:24:16,594 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 09:24:16] "GET / HTTP/1.1" 200 -
-2025-09-28 09:24:39,622 - __main__ - INFO - POST / - 127.0.0.1
-2025-09-28 09:24:39,622 - __main__ - INFO - Job search: 'Full Stack Developer' in 'Lagos' type:'all' local:True
-2025-09-28 09:24:39,626 - jobberman_scraper - INFO - Searching Jobberman for: Full Stack Developer in Lagos
-2025-09-28 09:24:39,629 - indeed_scraper - INFO - Searching Indeed: https://ng.indeed.com/jobs?q=Full+Stack+Developer&l=Lagos&start=0&sort=relevance
-2025-09-28 09:24:39,869 - job_aggregator - INFO - Jooble API: Found 0 jobs
-2025-09-28 09:24:40,320 - job_aggregator - INFO - Adzuna API: Found 0 jobs
-2025-09-28 09:24:40,885 - api_manager - ERROR - JSearch API 403 Forbidden - Check API key validity and usage limits
-2025-09-28 09:24:40,886 - job_aggregator - INFO - JSearch API: Found 0 jobs
-2025-09-28 09:24:43,992 - indeed_scraper - WARNING - Attempt 1 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full+Stack+Developer&l=Lagos&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 09:24:44,991 - jobberman_scraper - WARNING - URL gone (410): https://www.jobberman.com/search?q=Full Stack Developer
-2025-09-28 09:24:47,022 - jobberman_scraper - INFO - Found jobs with flexible parsing
-2025-09-28 09:24:47,022 - jobberman_scraper - INFO - Jobberman scraper found 5 jobs
-2025-09-28 09:24:47,022 - job_aggregator - INFO - Jobberman: Found 5 jobs
-2025-09-28 09:24:55,929 - indeed_scraper - WARNING - Attempt 2 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full+Stack+Developer&l=Lagos&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 09:25:11,772 - indeed_scraper - WARNING - Attempt 3 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full+Stack+Developer&l=Lagos&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 09:25:20,187 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 09:25:42,517 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 09:26:00,233 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 09:26:18,639 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 09:26:31,884 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 09:26:45,676 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 09:26:57,008 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 09:27:06,555 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 09:27:21,585 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 09:27:21,586 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 09:27:21] "GET / HTTP/1.1" 200 -
-2025-09-28 09:27:31,087 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 09:27:52,383 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 09:28:09,544 - __main__ - INFO - POST / - 127.0.0.1
-2025-09-28 09:28:09,544 - __main__ - INFO - Job search: 'Python developer' in 'UK' type:'all' local:False
-2025-09-28 09:28:09,547 - indeed_scraper - INFO - Searching Indeed: https://uk.indeed.com/jobs?q=Python+developer&l=UK&start=0&sort=relevance
-2025-09-28 09:28:09,904 - job_aggregator - INFO - Jooble API: Found 5 jobs
-2025-09-28 09:28:10,270 - job_aggregator - INFO - Adzuna API: Found 5 jobs
-2025-09-28 09:28:10,866 - api_manager - ERROR - JSearch API 403 Forbidden - Check API key validity and usage limits
-2025-09-28 09:28:10,867 - job_aggregator - INFO - JSearch API: Found 0 jobs
-2025-09-28 09:28:15,141 - indeed_scraper - WARNING - Attempt 1 failed: HTTPSConnectionPool(host='uk.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Python+developer&l=UK&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 09:28:16,024 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 09:28:28,251 - indeed_scraper - WARNING - Attempt 2 failed: HTTPSConnectionPool(host='uk.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Python+developer&l=UK&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 09:28:36,535 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 09:28:39,452 - indeed_scraper - WARNING - Attempt 3 failed: HTTPSConnectionPool(host='uk.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Python+developer&l=UK&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 09:28:42,228 - indeed_scraper - INFO - Indeed scraper found 0 jobs
-2025-09-28 09:28:42,228 - job_aggregator - INFO - Indeed: Found 0 jobs
-2025-09-28 09:28:42,229 - job_aggregator - INFO - Total jobs found: 5, Unique jobs: 4
-2025-09-28 09:28:42,230 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 09:28:42] "POST / HTTP/1.1" 200 -
-2025-09-28 09:28:44,763 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 09:29:04,976 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 09:29:18,834 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 09:29:30,713 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 09:29:47,090 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 09:29:58,377 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 09:30:09,227 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 09:30:26,239 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 09:30:41,137 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 09:30:54,867 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
+ * Running on http://10.0.1.66:8000
+2025-09-28 11:06:29,990 - werkzeug - INFO - [33mPress CTRL+C to quit[0m

@@ -22,6 +22,11 @@ class APIManager:
         
         try:
             jooble_url = f"https://jooble.org/api/{self.jooble_key}"
+            
+            # Enhanced location mapping for Nigerian searches
+            if any(nigerian_term in location.lower() for nigerian_term in ['nigeria', 'lagos', 'abuja', 'calabar']):
+                location = 'Nigeria'
+            
             jooble_params = {
                 "keywords": keywords,
                 "location": location,
@@ -43,6 +48,7 @@ class APIManager:
                         'job_type': '',
                         'source': 'Jooble'
                     })
+                logger.info(f"Jooble found {len(jobs)} jobs")
             else:
                 logger.error(f"Jooble API error: {response.status_code}")
                 
@@ -52,14 +58,14 @@ class APIManager:
         return jobs
     
     def search_adzuna(self, keywords: str, location: str = "remote", max_results: int = 5) -> List[Dict]:
-        """Search jobs using Adzuna API"""
+        """Search jobs using Adzuna API with enhanced Nigerian support"""
         jobs = []
         if not self.adzuna_app_id or not self.adzuna_app_key:
             logger.warning("Adzuna credentials not configured")
             return jobs
         
         try:
-            # Enhanced location mapping with better Nigerian support
+            # Enhanced location mapping
             location_map = {
                 'remote': 'us',
                 'new york, ny': 'us', 
@@ -67,35 +73,43 @@ class APIManager:
                 'london, uk': 'gb',
                 'berlin, de': 'de',
                 'toronto, on': 'ca',
-                'nigeria': 'us',  # Changed to US for better results
-                'lagos': 'us',    # Nigerian cities mapped to US for global jobs
+                'uk': 'gb',
+                'united kingdom': 'gb',
+                'usa': 'us',
+                'united states': 'us',
+                # Nigerian locations - use US API but with location-specific search
+                'nigeria': 'us',
+                'lagos': 'us',
                 'abuja': 'us',
                 'calabar': 'us',
                 'port harcourt': 'us',
                 'kano': 'us',
-                'ibadan': 'us',
-                'uk': 'gb',
-                'united kingdom': 'gb',
-                'usa': 'us',
-                'united states': 'us'
+                'ibadan': 'us'
             }
             
             country = location_map.get(location.lower(), 'us')
             base_url = f"https://api.adzuna.com/v1/api/jobs/{country}/search/1"
             
-            # Enhanced query for Nigerian locations
+            # Enhanced query building for Nigerian locations
             what_query = keywords
-            if any(nigerian_city in location.lower() for nigerian_city in ['nigeria', 'lagos', 'abuja', 'calabar']):
+            where_query = ''
+            
+            if any(nigerian_city in location.lower() for nigerian_city in ['nigeria', 'lagos', 'abuja', 'calabar', 'port harcourt', 'kano', 'ibadan']):
                 what_query = f"{keywords} Nigeria"
+                where_query = location
+            elif location and location.lower() != 'remote':
+                where_query = location
             
             params = {
                 'app_id': self.adzuna_app_id,
                 'app_key': self.adzuna_app_key,
                 'what': what_query,
-                'where': location if country != 'us' else '',
                 'results_per_page': max_results,
                 'sort_by': 'relevance'
             }
+            
+            if where_query:
+                params['where'] = where_query
             
             response = requests.get(base_url, params=params, timeout=15)
             
@@ -119,6 +133,7 @@ class APIManager:
                         'job_type': job.get('contract_time', ''),
                         'source': 'Adzuna'
                     })
+                logger.info(f"Adzuna found {len(jobs)} jobs")
             else:
                 logger.error(f"Adzuna API error: {response.status_code} - {response.text}")
                 
@@ -128,7 +143,7 @@ class APIManager:
         return jobs
     
     def search_jsearch(self, keywords: str, location: str = "", max_results: int = 5) -> List[Dict]:
-        """Search jobs using JSearch API with improved error handling"""
+        """Search jobs using JSearch API with fixed headers (following Grok's recommendation)"""
         jobs = []
         if not self.jsearch_key:
             logger.warning("JSEARCH_API_KEY not configured")
@@ -137,9 +152,8 @@ class APIManager:
         try:
             url = "https://jsearch.p.rapidapi.com/search"
             
-            # Enhanced query building
+            # Enhanced query building for Nigerian searches
             if location and location.lower() != 'remote':
-                # For Nigerian locations, include Nigeria in query
                 if any(nigerian_city in location.lower() for nigerian_city in ['nigeria', 'lagos', 'abuja', 'calabar', 'port harcourt']):
                     query = f"{keywords} {location} Nigeria"
                 else:
@@ -147,31 +161,30 @@ class APIManager:
             else:
                 query = keywords
             
-            querystring = {
+            # Parameters as recommended by Grok
+            params = {
                 "query": query,
-                "page": "1",
-                "num_pages": "1",
-                "date_posted": "all",
-                "employment_types": "FULLTIME,PARTTIME,CONTRACTOR,INTERN"
+                "page": 1,
+                "num_pages": 1
             }
             
+            # Headers exactly as recommended by Grok
             headers = {
-                "x-rapidapi-key": self.jsearch_key,  # lowercase header
-                "x-rapidapi-host": "jsearch.p.rapidapi.com",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                "X-RapidAPI-Key": self.jsearch_key,
+                "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
             }
             
-            # Add delay to avoid rate limiting
-            time.sleep(1)
+            # Small delay to avoid rate limiting
+            time.sleep(0.5)
             
-            response = requests.get(url, headers=headers, params=querystring, timeout=20)
+            response = requests.get(url, headers=headers, params=params, timeout=20)
             
             if response.status_code == 200:
                 data = response.json()
                 job_data = data.get('data', [])
                 
                 if not job_data:
-                    logger.warning("JSearch returned no job data")
+                    logger.info("JSearch returned no job data")
                     return jobs
                 
                 for job in job_data[:max_results]:
@@ -205,14 +218,12 @@ class APIManager:
                         'source': 'JSearch'
                     })
                     
-                logger.info(f"JSearch returned {len(jobs)} jobs")
+                logger.info(f"JSearch found {len(jobs)} jobs")
                 
             elif response.status_code == 403:
-                logger.error(f"JSearch API 403 Forbidden - Check API key validity and usage limits")
-                logger.debug(f"Response headers: {response.headers}")
+                logger.error(f"JSearch API 403 Forbidden - Check API key validity")
             elif response.status_code == 429:
-                logger.warning(f"JSearch API rate limited (429) - waiting before retry")
-                time.sleep(5)
+                logger.warning(f"JSearch API rate limited (429)")
             else:
                 logger.error(f"JSearch API error: {response.status_code} - {response.text[:200]}")
                 
