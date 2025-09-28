@@ -3,11 +3,11 @@ import random
 import logging
 import time
 from typing import List, Dict, Optional
-from playwright.async_api import async_playwright, Browser, Page
+from playwright.async_api import async_playwright
 from playwright_stealth import stealth_async
 from proxy_manager import ProxyManager
 from user_agent_manager import UserAgentManager
-import concurrent.futures
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -16,48 +16,15 @@ class IndeedScraper:
         self.proxy_manager = proxy_manager
         self.ua_manager = user_agent_manager
         self.base_urls = {
-            'ng': 'https://ng.indeed.com',  # Nigeria
-            'gb': 'https://uk.indeed.com',  # UK  
-            'global': 'https://indeed.com'  # Global
+            'ng': 'https://ng.indeed.com',
+            'gb': 'https://uk.indeed.com',
+            'global': 'https://indeed.com'
         }
-        self.max_total_time = 45  # Maximum time for entire Indeed search
-        
+        self._lock = threading.Lock()
+    
     def search_jobs(self, keywords: str, location: str = '', job_type: str = '', 
                    max_results: int = 10, country: str = 'global') -> List[Dict]:
-        """Search jobs using Playwright with stealth and anti-detection"""
-        start_time = time.time()
-        
-        try:
-            # Run async playwright in thread
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(self._run_async_search, keywords, location, job_type, max_results, country)
-                jobs = future.result(timeout=self.max_total_time)
-                
-            search_time = time.time() - start_time
-            logger.info(f"Indeed scraper completed in {search_time:.1f}s, found {len(jobs)} jobs")
-            return jobs
-            
-        except concurrent.futures.TimeoutError:
-            logger.warning(f"Indeed search timed out after {self.max_total_time}s")
-            return []
-        except Exception as e:
-            logger.error(f"Error in Indeed scraper: {str(e)}")
-            return []
-    
-    def _run_async_search(self, keywords: str, location: str, job_type: str, max_results: int, country: str) -> List[Dict]:
-        """Run the async search in sync context"""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self._async_search_jobs(keywords, location, job_type, max_results, country))
-        finally:
-            loop.close()
-    
-    async def _async_search_jobs(self, keywords: str, location: str, job_type: str, max_results: int, country: str) -> List[Dict]:
-        """Async job search with Playwright"""
-        jobs = []
-        browser = None
-        
+        """Search jobs using Playwright with thread-safe execution"""
         try:
             # Determine best Indeed domain
             if 'uk' in location.lower() or 'united kingdom' in location.lower():
@@ -66,44 +33,27 @@ class IndeedScraper:
                 country = 'ng'
             
             base_url = self.base_urls.get(country, self.base_urls['global'])
-            
-            # Build search URL
             search_url = self._build_search_url(base_url, keywords, location, job_type)
-            logger.info(f"Searching Indeed: {search_url}")
             
-            # Launch browser with stealth
-            async with async_playwright() as p:
-                browser = await self._launch_stealth_browser(p)
-                page = await browser.new_page()
-                
-                # Apply stealth techniques
-                await stealth_async(page)
-                await self._configure_page(page)
-                
-                # Try multiple strategies
-                strategies = [
-                    self._strategy_direct_search,
-                    self._strategy_mobile_search,
-                    self._strategy_alternative_search
-                ]
-                
-                for i, strategy in enumerate(strategies):
-                    try:
-                        jobs = await strategy(page, search_url, base_url, max_results)
-                        if jobs:
-                            logger.info(f"Indeed strategy {i+1} succeeded with {len(jobs)} jobs")
-                            break
-                    except Exception as e:
-                        logger.warning(f"Indeed strategy {i+1} failed: {str(e)}")
-                        continue
-                        
+            logger.info(f"Indeed scraper starting: {search_url}")
+            
+            # Run async search in a new event loop (thread-safe)
+            with self._lock:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    jobs = loop.run_until_complete(
+                        self._async_search_jobs(search_url, base_url, max_results)
+                    )
+                finally:
+                    loop.close()
+            
+            logger.info(f"Indeed scraper found {len(jobs)} jobs")
+            return jobs
+            
         except Exception as e:
-            logger.error(f"Error in async Indeed search: {str(e)}")
-        finally:
-            if browser:
-                await browser.close()
-        
-        return jobs
+            logger.error(f"Error in Indeed scraper: {str(e)}")
+            return []
     
     def _build_search_url(self, base_url: str, keywords: str, location: str, job_type: str) -> str:
         """Build Indeed search URL"""
@@ -119,7 +69,7 @@ class IndeedScraper:
         if job_type and job_type != 'all':
             job_type_map = {
                 'fulltime': 'fulltime',
-                'parttime': 'parttime', 
+                'parttime': 'parttime',
                 'contract': 'contract',
                 'freelance': 'contract'
             }
@@ -128,156 +78,59 @@ class IndeedScraper:
         
         return f"{base_url}/jobs?{'&'.join(params)}"
     
-    async def _launch_stealth_browser(self, p) -> Browser:
-        """Launch browser with maximum stealth"""
-        # Get proxy configuration
-        proxy_config = None
-        if self.proxy_manager.proxies:
-            proxy_dict = self.proxy_manager.get_working_proxy()
-            if proxy_dict:
-                # Extract proxy details
-                proxy_url = proxy_dict['http']
-                if '@' in proxy_url:
-                    # With authentication
-                    auth_part = proxy_url.split('://')[1].split('@')[0]
-                    server_part = proxy_url.split('@')[1]
-                    username, password = auth_part.split(':')
-                    server = f"http://{server_part}"
-                    proxy_config = {
-                        'server': server,
-                        'username': username,
-                        'password': password
-                    }
-                else:
-                    # Without authentication
-                    proxy_config = {'server': proxy_url}
+    async def _async_search_jobs(self, search_url: str, base_url: str, max_results: int) -> List[Dict]:
+        """Async job search with Playwright"""
+        jobs = []
+        browser = None
         
-        # Browser launch options with maximum stealth
-        launch_options = {
-            'headless': True,
-            'args': [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--no-first-run',
-                '--no-zygote',
-                '--disable-gpu',
-                '--disable-background-timer-throttling',
-                '--disable-backgrounding-occluded-windows',
-                '--disable-renderer-backgrounding',
-                '--disable-features=TranslateUI',
-                '--disable-ipc-flooding-protection',
-                '--window-size=1920,1080'
-            ]
-        }
-        
-        if proxy_config:
-            launch_options['proxy'] = proxy_config
-        
-        return await p.chromium.launch(**launch_options)
-    
-    async def _configure_page(self, page: Page):
-        """Configure page with human-like settings"""
-        # Set realistic viewport
-        await page.set_viewport_size({"width": 1366, "height": 768})
-        
-        # Set realistic user agent
-        await page.set_user_agent(self.ua_manager.get_chrome_user_agent())
-        
-        # Set additional headers
-        await page.set_extra_http_headers({
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1'
-        })
-        
-        # Block unnecessary resources for speed
-        await page.route('**/*.{png,jpg,jpeg,gif,svg,css,font,woff,woff2}', lambda route: route.abort())
-    
-    async def _strategy_direct_search(self, page: Page, search_url: str, base_url: str, max_results: int) -> List[Dict]:
-        """Direct Indeed search strategy"""
         try:
-            # Navigate with realistic timing
-            await page.goto(search_url, wait_until='domcontentloaded', timeout=20000)
-            
-            # Human-like delay
-            await page.wait_for_timeout(random.randint(2000, 4000))
-            
-            # Parse jobs
-            return await self._parse_jobs_from_page(page, base_url, max_results)
-            
+            async with async_playwright() as p:
+                # Launch browser with simple configuration
+                browser = await p.chromium.launch(
+                    headless=True,
+                    args=[
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--disable-dev-shm-usage',
+                        '--disable-gpu'
+                    ]
+                )
+                
+                page = await browser.new_page()
+                
+                # Apply stealth
+                await stealth_async(page)
+                
+                # Set realistic user agent
+                await page.set_user_agent(self.ua_manager.get_chrome_user_agent())
+                
+                # Navigate to Indeed
+                await page.goto(search_url, wait_until='domcontentloaded', timeout=20000)
+                
+                # Wait a bit for content to load
+                await page.wait_for_timeout(3000)
+                
+                # Parse jobs from page
+                jobs = await self._parse_jobs_from_page(page, base_url, max_results)
+                
         except Exception as e:
-            logger.debug(f"Direct search strategy failed: {str(e)}")
-            return []
+            logger.warning(f"Playwright Indeed search failed: {str(e)}")
+        finally:
+            if browser:
+                await browser.close()
+        
+        return jobs
     
-    async def _strategy_mobile_search(self, page: Page, search_url: str, base_url: str, max_results: int) -> List[Dict]:
-        """Mobile Indeed search strategy"""
-        try:
-            # Convert to mobile URL
-            mobile_url = search_url.replace('indeed.com', 'm.indeed.com')
-            mobile_url = mobile_url.replace('ng.indeed.com', 'm.ng.indeed.com')
-            mobile_url = mobile_url.replace('uk.indeed.com', 'm.uk.indeed.com')
-            
-            # Set mobile user agent
-            await page.set_user_agent('Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1')
-            await page.set_viewport_size({"width": 375, "height": 667})
-            
-            await page.goto(mobile_url, wait_until='domcontentloaded', timeout=15000)
-            await page.wait_for_timeout(random.randint(1500, 3000))
-            
-            return await self._parse_jobs_from_page(page, base_url, max_results, mobile=True)
-            
-        except Exception as e:
-            logger.debug(f"Mobile search strategy failed: {str(e)}")
-            return []
-    
-    async def _strategy_alternative_search(self, page: Page, search_url: str, base_url: str, max_results: int) -> List[Dict]:
-        """Alternative Indeed search with different approach"""
-        try:
-            # Try different URL patterns
-            alt_url = search_url + '&radius=25&fromage=7'  # 25km radius, last 7 days
-            
-            await page.goto(alt_url, wait_until='networkidle', timeout=25000)
-            await page.wait_for_timeout(random.randint(2000, 5000))
-            
-            # Try to handle any popups or overlays
-            try:
-                # Close common popups
-                popup_selectors = ['[aria-label="close"]', '.icl-CloseButton', '.popover-x-button-close']
-                for selector in popup_selectors:
-                    if await page.locator(selector).count() > 0:
-                        await page.click(selector)
-                        await page.wait_for_timeout(500)
-            except:
-                pass
-            
-            return await self._parse_jobs_from_page(page, base_url, max_results)
-            
-        except Exception as e:
-            logger.debug(f"Alternative search strategy failed: {str(e)}")
-            return []
-    
-    async def _parse_jobs_from_page(self, page: Page, base_url: str, max_results: int, mobile: bool = False) -> List[Dict]:
+    async def _parse_jobs_from_page(self, page, base_url: str, max_results: int) -> List[Dict]:
         """Parse jobs from the current page"""
         jobs = []
         
         try:
-            # Wait for job results to load
-            await page.wait_for_timeout(3000)
-            
             # Multiple selectors for job cards
             job_selectors = [
-                '[data-jk]',  # Main Indeed job cards
+                '[data-jk]',
                 '.jobsearch-SerpJobCard',
                 '.job_seen_beacon',
-                '.slider_item',
                 'td.resultContent'
             ]
             
@@ -293,13 +146,13 @@ class IndeedScraper:
                     continue
             
             if not job_cards:
-                logger.warning("No job cards found on page")
+                logger.warning("No job cards found on Indeed page")
                 return []
             
             # Extract job data from cards
             for i, card in enumerate(job_cards[:max_results]):
                 try:
-                    job_data = await self._extract_job_data_from_card(card, base_url, mobile)
+                    job_data = await self._extract_job_data_from_card(card, base_url)
                     if job_data and self._is_valid_job(job_data):
                         jobs.append(job_data)
                 except Exception as e:
@@ -307,11 +160,11 @@ class IndeedScraper:
                     continue
                     
         except Exception as e:
-            logger.warning(f"Error parsing jobs from page: {str(e)}")
+            logger.warning(f"Error parsing jobs from Indeed page: {str(e)}")
         
         return jobs
     
-    async def _extract_job_data_from_card(self, card, base_url: str, mobile: bool = False) -> Optional[Dict]:
+    async def _extract_job_data_from_card(self, card, base_url: str) -> Optional[Dict]:
         """Extract job data from a single job card"""
         try:
             job_data = {
@@ -330,8 +183,7 @@ class IndeedScraper:
                 'h2 a span[title]',
                 'h2 a',
                 '.jobTitle a',
-                '[data-testid="job-title"] a',
-                'a[data-jk]'
+                '[data-testid="job-title"] a'
             ]
             
             for selector in title_selectors:
@@ -383,22 +235,14 @@ class IndeedScraper:
                     continue
             
             # Extract salary
-            salary_selectors = [
-                '.salary-snippet',
-                '[data-testid*="salary"]',
-                '.estimated-salary'
-            ]
-            
-            for selector in salary_selectors:
-                try:
-                    salary_elem = card.locator(selector).first
-                    if await salary_elem.count() > 0:
-                        salary = await salary_elem.inner_text()
-                        if salary and any(currency in salary for currency in ['₦', '$', '€', '£', 'USD', 'NGN', 'GBP']):
-                            job_data['salary'] = salary.strip()
-                            break
-                except:
-                    continue
+            try:
+                salary_elem = card.locator('.salary-snippet, [data-testid*="salary"]').first
+                if await salary_elem.count() > 0:
+                    salary = await salary_elem.inner_text()
+                    if salary and any(currency in salary for currency in ['₦', '$', '€', '£', 'USD', 'NGN', 'GBP']):
+                        job_data['salary'] = salary.strip()
+            except:
+                pass
             
             # Extract job link
             try:
@@ -442,7 +286,7 @@ class IndeedScraper:
         title = job_data['title'].lower()
         
         # Filter out spam
-        spam_indicators = ['undefined', 'null', 'error', 'test job', 'advertisement']
+        spam_indicators = ['undefined', 'null', 'error', 'test job']
         if any(spam in title for spam in spam_indicators):
             return False
         

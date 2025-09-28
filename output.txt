@@ -1,117 +1,36 @@
-🏹 Starting Hunter Job Search Engine...
-==================================
-✅ Virtual environment found
-./run_hunter.sh: line 28: .venv/bin/activate: No such file or directory
-📦 Checking dependencies...
+URL gone (410): https://www.jobberman.com/search?q=Developer
+🧪 Testing Individual Job Sources
+========================================
 
-🔧 Configuration Check:
-======================
-✅ All API keys configured
-✅ Proxy list configured
+🔍 Testing: 'Developer' in 'Nigeria'
+------------------------------
+✅ JSearch: 3 jobs
+   Sample: Flutter Developer at CourierPlus Services Nigeria
+✅ Jooble: 0 jobs
+✅ Adzuna: 0 jobs
 
-🚀 Starting Hunter Job Search Engine...
-======================================
-Access your job search engine at: http://localhost:8000
-Press Ctrl+C to stop the server
+🔍 Testing: 'Developer' in 'UK'
+------------------------------
+✅ JSearch: 3 jobs
+   Sample: Senior Full Stack Developer (React OR Angular) - £60,000-£65,000 - Hybrid (1 day a week onsite) at Ascentia Partners
+✅ Jooble: 2 jobs
+   Sample: Oracle Application Express (APEX) Developer at GD Mission Systems
+✅ Adzuna: 3 jobs
+   Sample: Business Development Manager at Arrow Electronics, Inc.
 
-/usr/local/python/3.12.1/lib/python3.12/site-packages/playwright_stealth/stealth.py:6: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-  import pkg_resources
-2025-09-28 15:52:54,527 - __main__ - INFO - Starting Hunter Job Search on 0.0.0.0:8000
- * Serving Flask app 'app'
- * Debug mode: off
-2025-09-28 15:52:54,529 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
- * Running on http://127.0.0.1:8000
- * Running on http://10.0.1.93:8000
-2025-09-28 15:52:54,529 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
-2025-09-28 15:54:02,810 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 15:54:02,831 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:54:02] "GET / HTTP/1.1" 200 -
-2025-09-28 15:54:03,525 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
-2025-09-28 15:54:03,526 - __main__ - WARNING - 404 Error: http://localhost:8000/favicon.ico
-2025-09-28 15:54:03,527 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:54:03] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-2025-09-28 15:54:37,693 - __main__ - INFO - POST / - 127.0.0.1
-2025-09-28 15:54:37,694 - __main__ - INFO - Job search: 'Full Stack Web Developer' in 'Lagos Nigeria' type:'all' local:False
-2025-09-28 15:54:37,694 - proxy_manager - INFO - Loaded 10 proxies
-2025-09-28 15:54:37,697 - job_aggregator - INFO - Starting comprehensive job search: 'Full Stack Web Developer' in 'Lagos Nigeria'
-2025-09-28 15:54:37,697 - job_aggregator - INFO - Starting API searches...
-2025-09-28 15:54:37,697 - job_aggregator - ERROR - Function search_jsearch error: signal only works in main thread of the main interpreter
-2025-09-28 15:54:37,697 - job_aggregator - ERROR - Function search_jooble error: signal only works in main thread of the main interpreter
-2025-09-28 15:54:37,697 - job_aggregator - INFO - JSearch API: Found 0 jobs
-2025-09-28 15:54:37,697 - job_aggregator - ERROR - Function search_adzuna error: signal only works in main thread of the main interpreter
-2025-09-28 15:54:37,698 - job_aggregator - INFO - Jooble API: Found 0 jobs
-2025-09-28 15:54:37,698 - job_aggregator - INFO - Adzuna API: Found 0 jobs
-2025-09-28 15:54:37,698 - job_aggregator - INFO - Starting scraper searches...
-2025-09-28 15:54:37,698 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
-2025-09-28 15:54:37,698 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
-2025-09-28 15:54:37,698 - job_aggregator - INFO - Jobberman: Found 0 jobs
-2025-09-28 15:54:37,698 - job_aggregator - INFO - Indeed: Found 0 jobs
-2025-09-28 15:54:37,699 - job_aggregator - INFO - Search completed in 0.0s: 0 total, 0 unique jobs
-2025-09-28 15:54:37,699 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:54:37] "POST / HTTP/1.1" 200 -
-2025-09-28 15:55:02,469 - __main__ - INFO - POST / - 127.0.0.1
-2025-09-28 15:55:02,469 - __main__ - INFO - Job search: 'Full Stack Web Developer' in 'Nigeria' type:'all' local:False
-2025-09-28 15:55:02,470 - proxy_manager - INFO - Loaded 10 proxies
-2025-09-28 15:55:02,470 - job_aggregator - INFO - Starting comprehensive job search: 'Full Stack Web Developer' in 'Nigeria'
-2025-09-28 15:55:02,470 - job_aggregator - INFO - Starting API searches...
-2025-09-28 15:55:02,471 - job_aggregator - ERROR - Function search_jsearch error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:02,471 - job_aggregator - ERROR - Function search_jooble error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:02,471 - job_aggregator - ERROR - Function search_adzuna error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:02,471 - job_aggregator - INFO - JSearch API: Found 0 jobs
-2025-09-28 15:55:02,471 - job_aggregator - INFO - Jooble API: Found 0 jobs
-2025-09-28 15:55:02,472 - job_aggregator - INFO - Adzuna API: Found 0 jobs
-2025-09-28 15:55:02,472 - job_aggregator - INFO - Starting scraper searches...
-2025-09-28 15:55:02,472 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:02,472 - job_aggregator - INFO - Jobberman: Found 0 jobs
-2025-09-28 15:55:02,472 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:02,473 - job_aggregator - INFO - Indeed: Found 0 jobs
-2025-09-28 15:55:02,473 - job_aggregator - INFO - Search completed in 0.0s: 0 total, 0 unique jobs
-2025-09-28 15:55:02,473 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:55:02] "POST / HTTP/1.1" 200 -
-2025-09-28 15:55:15,112 - __main__ - INFO - POST / - 127.0.0.1
-2025-09-28 15:55:15,112 - __main__ - INFO - Job search: 'Developer' in 'Nigeria' type:'all' local:False
-2025-09-28 15:55:15,112 - proxy_manager - INFO - Loaded 10 proxies
-2025-09-28 15:55:15,113 - job_aggregator - INFO - Starting comprehensive job search: 'Developer' in 'Nigeria'
-2025-09-28 15:55:15,113 - job_aggregator - INFO - Starting API searches...
-2025-09-28 15:55:15,113 - job_aggregator - ERROR - Function search_jsearch error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:15,113 - job_aggregator - ERROR - Function search_jooble error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:15,113 - job_aggregator - INFO - Jooble API: Found 0 jobs
-2025-09-28 15:55:15,114 - job_aggregator - ERROR - Function search_adzuna error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:15,114 - job_aggregator - INFO - JSearch API: Found 0 jobs
-2025-09-28 15:55:15,114 - job_aggregator - INFO - Adzuna API: Found 0 jobs
-2025-09-28 15:55:15,114 - job_aggregator - INFO - Starting scraper searches...
-2025-09-28 15:55:15,114 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:15,114 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:15,114 - job_aggregator - INFO - Indeed: Found 0 jobs
-2025-09-28 15:55:15,114 - job_aggregator - INFO - Jobberman: Found 0 jobs
-2025-09-28 15:55:15,115 - job_aggregator - INFO - Search completed in 0.0s: 0 total, 0 unique jobs
-2025-09-28 15:55:15,115 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:55:15] "POST / HTTP/1.1" 200 -
-2025-09-28 15:55:33,033 - __main__ - INFO - POST / - 127.0.0.1
-2025-09-28 15:55:33,034 - __main__ - INFO - Job search: 'Developer' in 'UK' type:'all' local:False
-2025-09-28 15:55:33,034 - proxy_manager - INFO - Loaded 10 proxies
-2025-09-28 15:55:33,034 - job_aggregator - INFO - Starting comprehensive job search: 'Developer' in 'UK'
-2025-09-28 15:55:33,035 - job_aggregator - INFO - Starting API searches...
-2025-09-28 15:55:33,035 - job_aggregator - ERROR - Function search_jsearch error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:33,035 - job_aggregator - ERROR - Function search_jooble error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:33,035 - job_aggregator - INFO - JSearch API: Found 0 jobs
-2025-09-28 15:55:33,035 - job_aggregator - ERROR - Function search_adzuna error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:33,035 - job_aggregator - INFO - Jooble API: Found 0 jobs
-2025-09-28 15:55:33,035 - job_aggregator - INFO - Adzuna API: Found 0 jobs
-2025-09-28 15:55:33,036 - job_aggregator - INFO - Starting scraper searches...
-2025-09-28 15:55:33,036 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:33,036 - job_aggregator - INFO - Indeed: Found 0 jobs
-2025-09-28 15:55:33,036 - job_aggregator - INFO - Search completed in 0.0s: 0 total, 0 unique jobs
-2025-09-28 15:55:33,037 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:55:33] "POST / HTTP/1.1" 200 -
-2025-09-28 15:55:59,794 - __main__ - INFO - POST / - 127.0.0.1
-2025-09-28 15:55:59,794 - __main__ - INFO - Job search: 'Copywriter' in 'New York' type:'all' local:False
-2025-09-28 15:55:59,794 - proxy_manager - INFO - Loaded 10 proxies
-2025-09-28 15:55:59,795 - job_aggregator - INFO - Starting comprehensive job search: 'Copywriter' in 'New York'
-2025-09-28 15:55:59,795 - job_aggregator - INFO - Starting API searches...
-2025-09-28 15:55:59,795 - job_aggregator - ERROR - Function search_jsearch error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:59,795 - job_aggregator - ERROR - Function search_jooble error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:59,795 - job_aggregator - INFO - JSearch API: Found 0 jobs
-2025-09-28 15:55:59,795 - job_aggregator - ERROR - Function search_adzuna error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:59,795 - job_aggregator - INFO - Jooble API: Found 0 jobs
-2025-09-28 15:55:59,796 - job_aggregator - INFO - Adzuna API: Found 0 jobs
-2025-09-28 15:55:59,796 - job_aggregator - INFO - Starting scraper searches...
-2025-09-28 15:55:59,796 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
-2025-09-28 15:55:59,796 - job_aggregator - INFO - Indeed: Found 0 jobs
-2025-09-28 15:55:59,796 - job_aggregator - INFO - Search completed in 0.0s: 0 total, 0 unique jobs
-2025-09-28 15:55:59,797 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:55:59] "POST / HTTP/1.1" 200 -
+🔍 Testing: 'Marketing' in 'Remote'
+------------------------------
+✅ JSearch: 3 jobs
+   Sample: Digital & Brand Analytics Mgr - 90231521 - Washington at Amtrak
+✅ Jooble: 3 jobs
+   Sample: Ecommerce and Digital Marketing Manager at Blinds To Go
+✅ Adzuna: 3 jobs
+   Sample: Director, Wholesale Marketing at Global Partners
+
+🧪 Testing Jobberman Scraper
+------------------------------
+✅ Jobberman: 3 jobs
+   1. placeholder at Find a Job
+   2. Search Filter at Homepage
+
+✅ Individual testing complete!
