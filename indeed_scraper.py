@@ -1,12 +1,13 @@
-import requests
-from bs4 import BeautifulSoup
-import time
+import asyncio
 import random
 import logging
-from urllib.parse import urlencode, urljoin
+import time
 from typing import List, Dict, Optional
+from playwright.async_api import async_playwright, Browser, Page
+from playwright_stealth import stealth_async
 from proxy_manager import ProxyManager
 from user_agent_manager import UserAgentManager
+import concurrent.futures
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +20,44 @@ class IndeedScraper:
             'gb': 'https://uk.indeed.com',  # UK  
             'global': 'https://indeed.com'  # Global
         }
-        self.session = requests.Session()
-    
+        self.max_total_time = 45  # Maximum time for entire Indeed search
+        
     def search_jobs(self, keywords: str, location: str = '', job_type: str = '', 
                    max_results: int = 10, country: str = 'global') -> List[Dict]:
-        """Enhanced Indeed job search with better anti-detection"""
+        """Search jobs using Playwright with stealth and anti-detection"""
+        start_time = time.time()
+        
+        try:
+            # Run async playwright in thread
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(self._run_async_search, keywords, location, job_type, max_results, country)
+                jobs = future.result(timeout=self.max_total_time)
+                
+            search_time = time.time() - start_time
+            logger.info(f"Indeed scraper completed in {search_time:.1f}s, found {len(jobs)} jobs")
+            return jobs
+            
+        except concurrent.futures.TimeoutError:
+            logger.warning(f"Indeed search timed out after {self.max_total_time}s")
+            return []
+        except Exception as e:
+            logger.error(f"Error in Indeed scraper: {str(e)}")
+            return []
+    
+    def _run_async_search(self, keywords: str, location: str, job_type: str, max_results: int, country: str) -> List[Dict]:
+        """Run the async search in sync context"""
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            return loop.run_until_complete(self._async_search_jobs(keywords, location, job_type, max_results, country))
+        finally:
+            loop.close()
+    
+    async def _async_search_jobs(self, keywords: str, location: str, job_type: str, max_results: int, country: str) -> List[Dict]:
+        """Async job search with Playwright"""
         jobs = []
+        browser = None
+        
         try:
             # Determine best Indeed domain
             if 'uk' in location.lower() or 'united kingdom' in location.lower():
@@ -34,207 +67,252 @@ class IndeedScraper:
             
             base_url = self.base_urls.get(country, self.base_urls['global'])
             
-            search_params = {
-                'q': keywords,
-                'l': location,
-                'start': 0,
-                'sort': 'relevance'
-            }
-            
-            if job_type and job_type != 'all':
-                job_type_map = {
-                    'fulltime': 'fulltime',
-                    'parttime': 'parttime', 
-                    'contract': 'contract',
-                    'freelance': 'contract'
-                }
-                if job_type.lower() in job_type_map:
-                    search_params['jt'] = job_type_map[job_type.lower()]
-            
-            search_url = f"{base_url}/jobs?" + urlencode(search_params)
+            # Build search URL
+            search_url = self._build_search_url(base_url, keywords, location, job_type)
             logger.info(f"Searching Indeed: {search_url}")
             
-            # Try multiple strategies
-            strategies = [
-                self._strategy_mobile_indeed,
-                self._strategy_regular_indeed,
-                self._strategy_alternative_indeed
+            # Launch browser with stealth
+            async with async_playwright() as p:
+                browser = await self._launch_stealth_browser(p)
+                page = await browser.new_page()
+                
+                # Apply stealth techniques
+                await stealth_async(page)
+                await self._configure_page(page)
+                
+                # Try multiple strategies
+                strategies = [
+                    self._strategy_direct_search,
+                    self._strategy_mobile_search,
+                    self._strategy_alternative_search
+                ]
+                
+                for i, strategy in enumerate(strategies):
+                    try:
+                        jobs = await strategy(page, search_url, base_url, max_results)
+                        if jobs:
+                            logger.info(f"Indeed strategy {i+1} succeeded with {len(jobs)} jobs")
+                            break
+                    except Exception as e:
+                        logger.warning(f"Indeed strategy {i+1} failed: {str(e)}")
+                        continue
+                        
+        except Exception as e:
+            logger.error(f"Error in async Indeed search: {str(e)}")
+        finally:
+            if browser:
+                await browser.close()
+        
+        return jobs
+    
+    def _build_search_url(self, base_url: str, keywords: str, location: str, job_type: str) -> str:
+        """Build Indeed search URL"""
+        params = []
+        params.append(f"q={keywords.replace(' ', '+')}")
+        
+        if location:
+            params.append(f"l={location.replace(' ', '+')}")
+        
+        params.append("start=0")
+        params.append("sort=relevance")
+        
+        if job_type and job_type != 'all':
+            job_type_map = {
+                'fulltime': 'fulltime',
+                'parttime': 'parttime', 
+                'contract': 'contract',
+                'freelance': 'contract'
+            }
+            if job_type.lower() in job_type_map:
+                params.append(f"jt={job_type_map[job_type.lower()]}")
+        
+        return f"{base_url}/jobs?{'&'.join(params)}"
+    
+    async def _launch_stealth_browser(self, p) -> Browser:
+        """Launch browser with maximum stealth"""
+        # Get proxy configuration
+        proxy_config = None
+        if self.proxy_manager.proxies:
+            proxy_dict = self.proxy_manager.get_working_proxy()
+            if proxy_dict:
+                # Extract proxy details
+                proxy_url = proxy_dict['http']
+                if '@' in proxy_url:
+                    # With authentication
+                    auth_part = proxy_url.split('://')[1].split('@')[0]
+                    server_part = proxy_url.split('@')[1]
+                    username, password = auth_part.split(':')
+                    server = f"http://{server_part}"
+                    proxy_config = {
+                        'server': server,
+                        'username': username,
+                        'password': password
+                    }
+                else:
+                    # Without authentication
+                    proxy_config = {'server': proxy_url}
+        
+        # Browser launch options with maximum stealth
+        launch_options = {
+            'headless': True,
+            'args': [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote',
+                '--disable-gpu',
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-renderer-backgrounding',
+                '--disable-features=TranslateUI',
+                '--disable-ipc-flooding-protection',
+                '--window-size=1920,1080'
+            ]
+        }
+        
+        if proxy_config:
+            launch_options['proxy'] = proxy_config
+        
+        return await p.chromium.launch(**launch_options)
+    
+    async def _configure_page(self, page: Page):
+        """Configure page with human-like settings"""
+        # Set realistic viewport
+        await page.set_viewport_size({"width": 1366, "height": 768})
+        
+        # Set realistic user agent
+        await page.set_user_agent(self.ua_manager.get_chrome_user_agent())
+        
+        # Set additional headers
+        await page.set_extra_http_headers({
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1'
+        })
+        
+        # Block unnecessary resources for speed
+        await page.route('**/*.{png,jpg,jpeg,gif,svg,css,font,woff,woff2}', lambda route: route.abort())
+    
+    async def _strategy_direct_search(self, page: Page, search_url: str, base_url: str, max_results: int) -> List[Dict]:
+        """Direct Indeed search strategy"""
+        try:
+            # Navigate with realistic timing
+            await page.goto(search_url, wait_until='domcontentloaded', timeout=20000)
+            
+            # Human-like delay
+            await page.wait_for_timeout(random.randint(2000, 4000))
+            
+            # Parse jobs
+            return await self._parse_jobs_from_page(page, base_url, max_results)
+            
+        except Exception as e:
+            logger.debug(f"Direct search strategy failed: {str(e)}")
+            return []
+    
+    async def _strategy_mobile_search(self, page: Page, search_url: str, base_url: str, max_results: int) -> List[Dict]:
+        """Mobile Indeed search strategy"""
+        try:
+            # Convert to mobile URL
+            mobile_url = search_url.replace('indeed.com', 'm.indeed.com')
+            mobile_url = mobile_url.replace('ng.indeed.com', 'm.ng.indeed.com')
+            mobile_url = mobile_url.replace('uk.indeed.com', 'm.uk.indeed.com')
+            
+            # Set mobile user agent
+            await page.set_user_agent('Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1')
+            await page.set_viewport_size({"width": 375, "height": 667})
+            
+            await page.goto(mobile_url, wait_until='domcontentloaded', timeout=15000)
+            await page.wait_for_timeout(random.randint(1500, 3000))
+            
+            return await self._parse_jobs_from_page(page, base_url, max_results, mobile=True)
+            
+        except Exception as e:
+            logger.debug(f"Mobile search strategy failed: {str(e)}")
+            return []
+    
+    async def _strategy_alternative_search(self, page: Page, search_url: str, base_url: str, max_results: int) -> List[Dict]:
+        """Alternative Indeed search with different approach"""
+        try:
+            # Try different URL patterns
+            alt_url = search_url + '&radius=25&fromage=7'  # 25km radius, last 7 days
+            
+            await page.goto(alt_url, wait_until='networkidle', timeout=25000)
+            await page.wait_for_timeout(random.randint(2000, 5000))
+            
+            # Try to handle any popups or overlays
+            try:
+                # Close common popups
+                popup_selectors = ['[aria-label="close"]', '.icl-CloseButton', '.popover-x-button-close']
+                for selector in popup_selectors:
+                    if await page.locator(selector).count() > 0:
+                        await page.click(selector)
+                        await page.wait_for_timeout(500)
+            except:
+                pass
+            
+            return await self._parse_jobs_from_page(page, base_url, max_results)
+            
+        except Exception as e:
+            logger.debug(f"Alternative search strategy failed: {str(e)}")
+            return []
+    
+    async def _parse_jobs_from_page(self, page: Page, base_url: str, max_results: int, mobile: bool = False) -> List[Dict]:
+        """Parse jobs from the current page"""
+        jobs = []
+        
+        try:
+            # Wait for job results to load
+            await page.wait_for_timeout(3000)
+            
+            # Multiple selectors for job cards
+            job_selectors = [
+                '[data-jk]',  # Main Indeed job cards
+                '.jobsearch-SerpJobCard',
+                '.job_seen_beacon',
+                '.slider_item',
+                'td.resultContent'
             ]
             
-            for strategy in strategies:
+            job_cards = []
+            for selector in job_selectors:
                 try:
-                    jobs = strategy(search_url, base_url, max_results)
-                    if jobs:
-                        logger.info(f"Indeed strategy succeeded with {len(jobs)} jobs")
+                    cards = await page.locator(selector).all()
+                    if cards:
+                        job_cards = cards
+                        logger.debug(f"Found {len(cards)} job cards with selector: {selector}")
                         break
+                except:
+                    continue
+            
+            if not job_cards:
+                logger.warning("No job cards found on page")
+                return []
+            
+            # Extract job data from cards
+            for i, card in enumerate(job_cards[:max_results]):
+                try:
+                    job_data = await self._extract_job_data_from_card(card, base_url, mobile)
+                    if job_data and self._is_valid_job(job_data):
+                        jobs.append(job_data)
                 except Exception as e:
-                    logger.warning(f"Indeed strategy failed: {str(e)}")
+                    logger.debug(f"Error extracting job {i}: {str(e)}")
                     continue
                     
         except Exception as e:
-            logger.error(f"Error scraping Indeed: {str(e)}")
-        
-        logger.info(f"Indeed scraper found {len(jobs)} jobs")
-        return jobs
-    
-    def _strategy_mobile_indeed(self, search_url: str, base_url: str, max_results: int) -> List[Dict]:
-        """Try mobile version of Indeed (often less protected)"""
-        mobile_url = search_url.replace('indeed.com', 'm.indeed.com').replace('ng.indeed.com', 'm.ng.indeed.com').replace('uk.indeed.com', 'm.uk.indeed.com')
-        
-        html_content = self._fetch_page_enhanced(mobile_url, mobile=True)
-        if html_content:
-            return self._parse_jobs_enhanced(html_content, base_url, max_results, mobile=True)
-        return []
-    
-    def _strategy_regular_indeed(self, search_url: str, base_url: str, max_results: int) -> List[Dict]:
-        """Regular Indeed scraping with enhanced headers"""
-        html_content = self._fetch_page_enhanced(search_url, mobile=False)
-        if html_content:
-            return self._parse_jobs_enhanced(html_content, base_url, max_results, mobile=False)
-        return []
-    
-    def _strategy_alternative_indeed(self, search_url: str, base_url: str, max_results: int) -> List[Dict]:
-        """Alternative Indeed URL patterns"""
-        # Try different URL patterns
-        alt_urls = [
-            search_url.replace('/jobs?', '/q-'),  # Alternative URL structure
-            search_url + '&radius=50',  # Add radius
-            search_url.replace('indeed.com', 'indeed.co.uk') if 'uk' in search_url else search_url
-        ]
-        
-        for url in alt_urls:
-            html_content = self._fetch_page_enhanced(url)
-            if html_content:
-                jobs = self._parse_jobs_enhanced(html_content, base_url, max_results)
-                if jobs:
-                    return jobs
-        return []
-    
-    def _fetch_page_enhanced(self, url: str, max_retries: int = 3, mobile: bool = False) -> Optional[str]:
-        """Enhanced page fetching with multiple anti-detection techniques"""
-        for attempt in range(max_retries):
-            try:
-                # Get a working proxy
-                proxy = self.proxy_manager.get_working_proxy() if self.proxy_manager.proxies else None
-                
-                # Enhanced headers based on mobile vs desktop
-                if mobile:
-                    headers = {
-                        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
-                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                        'Accept-Language': 'en-US,en;q=0.5',
-                        'Accept-Encoding': 'gzip, deflate',
-                        'Connection': 'keep-alive',
-                        'Upgrade-Insecure-Requests': '1'
-                    }
-                else:
-                    headers = self.ua_manager.get_headers()
-                    headers.update({
-                        'Sec-Fetch-Dest': 'document',
-                        'Sec-Fetch-Mode': 'navigate',
-                        'Sec-Fetch-Site': 'none',
-                        'Sec-Fetch-User': '?1',
-                        'Cache-Control': 'max-age=0'
-                    })
-                
-                # Random delay with jitter
-                time.sleep(random.uniform(2, 6))
-                
-                # Add some randomization to avoid patterns
-                if random.random() < 0.3:
-                    headers['DNT'] = '1'
-                
-                response = self.session.get(
-                    url,
-                    headers=headers,
-                    proxies=proxy,
-                    timeout=20,
-                    allow_redirects=True,
-                    verify=True
-                )
-                
-                if response.status_code == 200:
-                    # Check if we got blocked (Indeed sometimes returns 200 but with block page)
-                    if 'blocked' in response.text.lower() or 'captcha' in response.text.lower():
-                        logger.warning(f"Indeed returned block page - attempt {attempt + 1}")
-                        time.sleep(random.uniform(10, 20))
-                        continue
-                    
-                    return response.text
-                    
-                elif response.status_code == 403:
-                    logger.warning(f"Indeed blocked request (403) - attempt {attempt + 1}")
-                    time.sleep(random.uniform(5, 15))
-                    
-                elif response.status_code == 429:  # Rate limited
-                    wait_time = random.uniform(20, 40)
-                    logger.warning(f"Indeed rate limited, waiting {wait_time:.1f}s")
-                    time.sleep(wait_time)
-                    
-                elif response.status_code == 503:  # Service unavailable
-                    wait_time = random.uniform(10, 20)
-                    logger.warning(f"Indeed service unavailable, waiting {wait_time:.1f}s")
-                    time.sleep(wait_time)
-                    
-                else:
-                    logger.warning(f"HTTP {response.status_code} for {url}")
-                    
-            except Exception as e:
-                logger.warning(f"Attempt {attempt + 1} failed: {str(e)}")
-                if attempt < max_retries - 1:
-                    time.sleep(random.uniform(5, 10))
-        
-        return None
-    
-    def _parse_jobs_enhanced(self, html_content: str, base_url: str, max_results: int, mobile: bool = False) -> List[Dict]:
-        """Enhanced job parsing with multiple selector strategies"""
-        jobs = []
-        soup = BeautifulSoup(html_content, 'html.parser')
-        
-        # Multiple selector strategies for different Indeed layouts
-        if mobile:
-            selectors_to_try = [
-                'div[data-jk]',  # Mobile job cards
-                '.job',
-                '.jobsearch-SerpJobCard',
-                '[class*="job"]'
-            ]
-        else:
-            selectors_to_try = [
-                'div[data-jk]',  # Current Indeed job cards
-                '.jobsearch-SerpJobCard',
-                '.job_seen_beacon',
-                '.slider_container .slider_item',
-                'td.resultContent',
-                '[class*="job"]',
-                '[data-testid*="job"]'
-            ]
-        
-        job_cards = []
-        for selector in selectors_to_try:
-            job_cards = soup.select(selector)
-            if job_cards:
-                logger.debug(f"Found {len(job_cards)} job cards with selector: {selector}")
-                break
-        
-        if not job_cards:
-            logger.warning("No job cards found with any selector")
-            return jobs
-        
-        jobs_found = 0
-        for card in job_cards:
-            if jobs_found >= max_results:
-                break
-                
-            job_data = self._extract_job_data_enhanced(card, base_url, mobile)
-            if job_data and self._is_valid_job(job_data):
-                jobs.append(job_data)
-                jobs_found += 1
+            logger.warning(f"Error parsing jobs from page: {str(e)}")
         
         return jobs
     
-    def _extract_job_data_enhanced(self, card, base_url: str, mobile: bool = False) -> Optional[Dict]:
-        """Enhanced job data extraction"""
+    async def _extract_job_data_from_card(self, card, base_url: str, mobile: bool = False) -> Optional[Dict]:
+        """Extract job data from a single job card"""
         try:
             job_data = {
                 'title': '',
@@ -247,137 +325,132 @@ class IndeedScraper:
                 'source': 'Indeed'
             }
             
-            if mobile:
-                # Mobile selectors
-                title_selectors = [
-                    'h2 a span[title]',
-                    'h2 a',
-                    '.jobTitle a',
-                    '[data-testid="job-title"] a'
-                ]
-                
-                company_selectors = [
-                    '[data-testid="company-name"]',
-                    '.companyName'
-                ]
-                
-                location_selectors = [
-                    '[data-testid="job-location"]',
-                    '.companyLocation'
-                ]
-            else:
-                # Desktop selectors
-                title_selectors = [
-                    '[data-jk] h2 a span[title]',
-                    '[data-jk] h2 span[title]',
-                    'h2 a span[title]',
-                    '.jobTitle a span[title]',
-                    'h2.jobTitle span[title]',
-                    '[data-testid="job-title"] a'
-                ]
-                
-                company_selectors = [
-                    '[data-testid="company-name"]',
-                    '.companyName a',
-                    '.companyName span',
-                    'span.companyName'
-                ]
-                
-                location_selectors = [
-                    '[data-testid="job-location"]',
-                    '.companyLocation',
-                    'div.companyLocation'
-                ]
-            
             # Extract title
+            title_selectors = [
+                'h2 a span[title]',
+                'h2 a',
+                '.jobTitle a',
+                '[data-testid="job-title"] a',
+                'a[data-jk]'
+            ]
+            
             for selector in title_selectors:
-                title_elem = card.select_one(selector)
-                if title_elem:
-                    job_data['title'] = title_elem.get('title') or title_elem.get_text(strip=True)
-                    if job_data['title']:
-                        break
+                try:
+                    title_elem = card.locator(selector).first
+                    if await title_elem.count() > 0:
+                        title = await title_elem.get_attribute('title')
+                        if not title:
+                            title = await title_elem.inner_text()
+                        if title and title.strip():
+                            job_data['title'] = title.strip()
+                            break
+                except:
+                    continue
             
             # Extract company
+            company_selectors = [
+                '[data-testid="company-name"]',
+                '.companyName',
+                'span.companyName'
+            ]
+            
             for selector in company_selectors:
-                company_elem = card.select_one(selector)
-                if company_elem:
-                    job_data['company'] = company_elem.get_text(strip=True)
-                    if job_data['company']:
-                        break
+                try:
+                    company_elem = card.locator(selector).first
+                    if await company_elem.count() > 0:
+                        company = await company_elem.inner_text()
+                        if company and company.strip():
+                            job_data['company'] = company.strip()
+                            break
+                except:
+                    continue
             
             # Extract location
-            for selector in location_selectors:
-                location_elem = card.select_one(selector)
-                if location_elem:
-                    job_data['location'] = location_elem.get_text(strip=True)
-                    if job_data['location']:
-                        break
+            location_selectors = [
+                '[data-testid="job-location"]',
+                '.companyLocation'
+            ]
             
-            # Extract salary with fixed currency symbols
+            for selector in location_selectors:
+                try:
+                    location_elem = card.locator(selector).first
+                    if await location_elem.count() > 0:
+                        location = await location_elem.inner_text()
+                        if location and location.strip():
+                            job_data['location'] = location.strip()
+                            break
+                except:
+                    continue
+            
+            # Extract salary
             salary_selectors = [
                 '.salary-snippet',
                 '[data-testid*="salary"]',
-                '.estimated-salary',
-                '.salaryText'
+                '.estimated-salary'
             ]
             
             for selector in salary_selectors:
-                salary_elem = card.select_one(selector)
-                if salary_elem:
-                    salary_text = salary_elem.get_text(strip=True)
-                    # Fixed currency list - using Unicode escapes for special characters
-                    currency_symbols = ['\u20A6', '$', '\u20AC', '\u00A3', 'USD', 'NGN', 'GBP', 'EUR']  # ₦, $, €, £
-                    if any(currency in salary_text for currency in currency_symbols):
-                        job_data['salary'] = salary_text
-                        break
+                try:
+                    salary_elem = card.locator(selector).first
+                    if await salary_elem.count() > 0:
+                        salary = await salary_elem.inner_text()
+                        if salary and any(currency in salary for currency in ['₦', '$', '€', '£', 'USD', 'NGN', 'GBP']):
+                            job_data['salary'] = salary.strip()
+                            break
+                except:
+                    continue
             
             # Extract job link
-            link_elem = card.select_one('h2 a[href], [data-jk]')
-            if link_elem:
-                if link_elem.name == 'a':
-                    href = link_elem.get('href')
+            try:
+                link_elem = card.locator('h2 a[href]').first
+                if await link_elem.count() > 0:
+                    href = await link_elem.get_attribute('href')
+                    if href:
+                        if href.startswith('/'):
+                            job_data['link'] = base_url + href
+                        else:
+                            job_data['link'] = href
                 else:
-                    # For data-jk elements, construct the link
-                    jk = link_elem.get('data-jk')
-                    href = f"/viewjob?jk={jk}" if jk else None
-                
-                if href:
-                    job_data['link'] = urljoin(base_url, href)
+                    # Try data-jk attribute
+                    jk = await card.get_attribute('data-jk')
+                    if jk:
+                        job_data['link'] = f"{base_url}/viewjob?jk={jk}"
+            except:
+                pass
             
             # Extract description
-            desc_selectors = [
-                '.job-snippet',
-                '.summary',
-                '[data-testid="job-snippet"]',
-                '.jobSnippet'
-            ]
-            
-            for selector in desc_selectors:
-                desc_elem = card.select_one(selector)
-                if desc_elem:
-                    job_data['description'] = desc_elem.get_text(strip=True)[:200]
-                    if job_data['description']:
-                        break
+            try:
+                desc_elem = card.locator('.job-snippet, .summary').first
+                if await desc_elem.count() > 0:
+                    description = await desc_elem.inner_text()
+                    if description:
+                        job_data['description'] = description.strip()[:200]
+            except:
+                pass
             
             return job_data if job_data['title'] else None
             
         except Exception as e:
-            logger.warning(f"Error extracting Indeed job data: {str(e)}")
+            logger.debug(f"Error extracting job data: {str(e)}")
             return None
     
     def _is_valid_job(self, job_data: Dict) -> bool:
         """Check if job data is valid"""
-        required_fields = ['title', 'company']
-        is_valid = all(job_data.get(field, '').strip() for field in required_fields)
+        if not job_data.get('title'):
+            return False
         
-        # Additional validation
-        if is_valid and job_data['title']:
-            title = job_data['title'].lower()
-            # Filter out obvious spam or invalid titles
-            spam_indicators = ['undefined', 'null', 'error', 'test job']
-            if any(spam in title for spam in spam_indicators):
-                return False
-            if len(job_data['title']) < 5:  # Title too short
-                return False
+        title = job_data['title'].lower()
         
-        return is_valid
+        # Filter out spam
+        spam_indicators = ['undefined', 'null', 'error', 'test job', 'advertisement']
+        if any(spam in title for spam in spam_indicators):
+            return False
+        
+        if len(job_data['title']) < 5:
+            return False
+        
+        # Must have either company or location
+        has_company = bool(job_data.get('company', '').strip())
+        has_location = bool(job_data.get('location', '').strip())
+        
+        return has_company or has_location

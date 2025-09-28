@@ -14,120 +14,104 @@
 Access your job search engine at: http://localhost:8000
 Press Ctrl+C to stop the server
 
-2025-09-28 11:26:13,905 - __main__ - INFO - Starting Hunter Job Search on 0.0.0.0:8000
+/usr/local/python/3.12.1/lib/python3.12/site-packages/playwright_stealth/stealth.py:6: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+2025-09-28 15:52:54,527 - __main__ - INFO - Starting Hunter Job Search on 0.0.0.0:8000
  * Serving Flask app 'app'
  * Debug mode: off
-2025-09-28 11:26:13,906 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2025-09-28 15:52:54,529 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:8000
- * Running on http://10.0.1.66:8000
-2025-09-28 11:26:13,906 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
-2025-09-28 11:26:29,812 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 11:26:29,831 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 11:26:29] "GET / HTTP/1.1" 200 -
-2025-09-28 11:26:37,172 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 11:26:37,172 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 11:26:37] "GET / HTTP/1.1" 200 -
-2025-09-28 11:27:19,911 - __main__ - INFO - POST / - 127.0.0.1
-2025-09-28 11:27:19,912 - __main__ - INFO - Job search: 'Full Stack Web Developer' in 'Lagos' type:'all' local:True
-2025-09-28 11:27:19,913 - proxy_manager - INFO - Loaded 10 proxies
-2025-09-28 11:27:19,918 - jobberman_scraper - INFO - Searching Jobberman for: Full Stack Web Developer in Lagos
-2025-09-28 11:27:19,918 - indeed_scraper - INFO - Searching Indeed: https://ng.indeed.com/jobs?q=Full+Stack+Web+Developer&l=Lagos&start=0&sort=relevance
-2025-09-28 11:27:20,412 - api_manager - INFO - Jooble found 0 jobs
-2025-09-28 11:27:20,413 - job_aggregator - INFO - Jooble API: Found 0 jobs
-2025-09-28 11:27:20,567 - api_manager - INFO - Adzuna found 0 jobs
-2025-09-28 11:27:20,569 - job_aggregator - INFO - Adzuna API: Found 0 jobs
-2025-09-28 11:27:23,158 - api_manager - INFO - JSearch found 5 jobs
-2025-09-28 11:27:23,160 - job_aggregator - INFO - JSearch API: Found 5 jobs
-2025-09-28 11:27:24,610 - jobberman_scraper - WARNING - URL gone (410): https://www.jobberman.com/search?q=Full Stack Web Developer
-2025-09-28 11:27:25,514 - proxy_manager - INFO - Proxy refresh: 5 working, 0 failed
-2025-09-28 11:27:27,189 - jobberman_scraper - INFO - Found jobs with flexible parsing
-2025-09-28 11:27:27,189 - jobberman_scraper - INFO - Jobberman scraper found 5 jobs
-2025-09-28 11:27:27,189 - job_aggregator - INFO - Jobberman: Found 5 jobs
-2025-09-28 11:27:32,221 - indeed_scraper - WARNING - Attempt 1 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full+Stack+Web+Developer&l=Lagos&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 11:27:45,956 - indeed_scraper - WARNING - Attempt 2 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full+Stack+Web+Developer&l=Lagos&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 11:27:57,124 - indeed_scraper - WARNING - Attempt 3 failed: HTTPSConnectionPool(host='ng.m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full+Stack+Web+Developer&l=Lagos&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 11:28:01,803 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:28:22,551 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:28:38,534 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:28:54,274 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:28:54,741 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 11:28:54,743 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 11:28:54] "GET / HTTP/1.1" 200 -
-2025-09-28 11:29:10,121 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:29:26,609 - __main__ - INFO - POST / - 127.0.0.1
-2025-09-28 11:29:26,609 - __main__ - INFO - Job search: 'Full Stack Web Developer' in 'London' type:'all' local:False
-2025-09-28 11:29:26,609 - proxy_manager - INFO - Loaded 10 proxies
-2025-09-28 11:29:26,612 - indeed_scraper - INFO - Searching Indeed: https://indeed.com/jobs?q=Full+Stack+Web+Developer&l=London&start=0&sort=relevance
-2025-09-28 11:29:26,929 - api_manager - INFO - Jooble found 5 jobs
-2025-09-28 11:29:26,930 - job_aggregator - INFO - Jooble API: Found 5 jobs
-2025-09-28 11:29:27,371 - api_manager - INFO - Adzuna found 0 jobs
-2025-09-28 11:29:27,372 - job_aggregator - INFO - Adzuna API: Found 0 jobs
-2025-09-28 11:29:28,916 - api_manager - INFO - JSearch found 5 jobs
-2025-09-28 11:29:28,917 - job_aggregator - INFO - JSearch API: Found 5 jobs
-2025-09-28 11:29:29,225 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:29:29,718 - proxy_manager - INFO - Proxy refresh: 5 working, 0 failed
-2025-09-28 11:29:35,885 - indeed_scraper - WARNING - Attempt 1 failed: HTTPSConnectionPool(host='m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full+Stack+Web+Developer&l=London&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 11:29:39,963 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:29:47,487 - indeed_scraper - WARNING - Attempt 2 failed: HTTPSConnectionPool(host='m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full+Stack+Web+Developer&l=London&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 11:29:56,617 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:30:03,985 - indeed_scraper - WARNING - Attempt 3 failed: HTTPSConnectionPool(host='m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Full+Stack+Web+Developer&l=London&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 11:30:07,710 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:30:08,885 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:30:19,897 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:30:23,749 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:30:35,740 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:30:40,412 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:30:47,726 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:30:53,149 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:31:01,513 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:31:06,410 - indeed_scraper - INFO - Indeed scraper found 0 jobs
-2025-09-28 11:31:06,410 - job_aggregator - INFO - Indeed: Found 0 jobs
-2025-09-28 11:31:06,412 - job_aggregator - INFO - Total jobs found: 10, Unique jobs: 9
-2025-09-28 11:31:06,415 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 11:31:06] "POST / HTTP/1.1" 200 -
-2025-09-28 11:31:14,271 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:31:26,896 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 11:31:26,896 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 11:31:26] "GET / HTTP/1.1" 200 -
-2025-09-28 11:31:29,513 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:31:45,026 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:32:03,239 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:32:21,147 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:32:34,359 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:32:47,071 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:32:58,028 - indeed_scraper - INFO - Indeed scraper found 0 jobs
-2025-09-28 11:32:58,029 - job_aggregator - INFO - Indeed: Found 0 jobs
-2025-09-28 11:32:58,029 - job_aggregator - INFO - Total jobs found: 10, Unique jobs: 10
-2025-09-28 11:32:58,031 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 11:32:58] "POST / HTTP/1.1" 200 -
-2025-09-28 11:33:03,237 - __main__ - INFO - POST / - 127.0.0.1
-2025-09-28 11:33:03,237 - __main__ - INFO - Job search: 'Python developer' in 'Canada' type:'all' local:False
-2025-09-28 11:33:03,237 - proxy_manager - INFO - Loaded 10 proxies
-2025-09-28 11:33:03,240 - indeed_scraper - INFO - Searching Indeed: https://indeed.com/jobs?q=Python+developer&l=Canada&start=0&sort=relevance
-2025-09-28 11:33:03,882 - api_manager - INFO - Adzuna found 0 jobs
-2025-09-28 11:33:03,883 - job_aggregator - INFO - Adzuna API: Found 0 jobs
-2025-09-28 11:33:04,106 - api_manager - INFO - Jooble found 5 jobs
-2025-09-28 11:33:04,107 - job_aggregator - INFO - Jooble API: Found 5 jobs
-2025-09-28 11:33:05,478 - api_manager - INFO - JSearch found 5 jobs
-2025-09-28 11:33:05,481 - job_aggregator - INFO - JSearch API: Found 5 jobs
-2025-09-28 11:33:09,790 - proxy_manager - INFO - Proxy refresh: 5 working, 0 failed
-2025-09-28 11:33:13,743 - indeed_scraper - WARNING - Attempt 1 failed: HTTPSConnectionPool(host='m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Python+developer&l=Canada&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 11:33:30,162 - indeed_scraper - WARNING - Attempt 2 failed: HTTPSConnectionPool(host='m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Python+developer&l=Canada&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 11:33:42,299 - indeed_scraper - WARNING - Attempt 3 failed: HTTPSConnectionPool(host='m.indeed.com', port=443): Max retries exceeded with url: /jobs?q=Python+developer&l=Canada&start=0&sort=relevance (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 502 Bad Gateway')))
-2025-09-28 11:33:50,145 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:34:01,027 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:34:13,349 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:34:31,735 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:34:42,217 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:34:56,762 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 11:34:56,763 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 11:34:56] "GET / HTTP/1.1" 200 -
-2025-09-28 11:35:01,699 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:35:18,606 - __main__ - INFO - GET /health - 127.0.0.1
-2025-09-28 11:35:18,607 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 11:35:18] "GET /health HTTP/1.1" 200 -
-2025-09-28 11:35:19,967 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:35:24,836 - __main__ - INFO - GET / - 127.0.0.1
-2025-09-28 11:35:24,837 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 11:35:24] "GET / HTTP/1.1" 200 -
-2025-09-28 11:35:37,789 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:35:52,996 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:36:12,638 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 1
-2025-09-28 11:36:33,725 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 2
-2025-09-28 11:36:49,984 - indeed_scraper - WARNING - Indeed blocked request (403) - attempt 3
-2025-09-28 11:36:57,753 - indeed_scraper - INFO - Indeed scraper found 0 jobs
-2025-09-28 11:36:57,754 - job_aggregator - INFO - Indeed: Found 0 jobs
-2025-09-28 11:36:57,755 - job_aggregator - INFO - Total jobs found: 10, Unique jobs: 9
-2025-09-28 11:36:57,756 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 11:36:57] "POST / HTTP/1.1" 200 -
+ * Running on http://10.0.1.93:8000
+2025-09-28 15:52:54,529 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-28 15:54:02,810 - __main__ - INFO - GET / - 127.0.0.1
+2025-09-28 15:54:02,831 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:54:02] "GET / HTTP/1.1" 200 -
+2025-09-28 15:54:03,525 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2025-09-28 15:54:03,526 - __main__ - WARNING - 404 Error: http://localhost:8000/favicon.ico
+2025-09-28 15:54:03,527 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:54:03] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-09-28 15:54:37,693 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 15:54:37,694 - __main__ - INFO - Job search: 'Full Stack Web Developer' in 'Lagos Nigeria' type:'all' local:False
+2025-09-28 15:54:37,694 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 15:54:37,697 - job_aggregator - INFO - Starting comprehensive job search: 'Full Stack Web Developer' in 'Lagos Nigeria'
+2025-09-28 15:54:37,697 - job_aggregator - INFO - Starting API searches...
+2025-09-28 15:54:37,697 - job_aggregator - ERROR - Function search_jsearch error: signal only works in main thread of the main interpreter
+2025-09-28 15:54:37,697 - job_aggregator - ERROR - Function search_jooble error: signal only works in main thread of the main interpreter
+2025-09-28 15:54:37,697 - job_aggregator - INFO - JSearch API: Found 0 jobs
+2025-09-28 15:54:37,697 - job_aggregator - ERROR - Function search_adzuna error: signal only works in main thread of the main interpreter
+2025-09-28 15:54:37,698 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-28 15:54:37,698 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-28 15:54:37,698 - job_aggregator - INFO - Starting scraper searches...
+2025-09-28 15:54:37,698 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
+2025-09-28 15:54:37,698 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
+2025-09-28 15:54:37,698 - job_aggregator - INFO - Jobberman: Found 0 jobs
+2025-09-28 15:54:37,698 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 15:54:37,699 - job_aggregator - INFO - Search completed in 0.0s: 0 total, 0 unique jobs
+2025-09-28 15:54:37,699 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:54:37] "POST / HTTP/1.1" 200 -
+2025-09-28 15:55:02,469 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 15:55:02,469 - __main__ - INFO - Job search: 'Full Stack Web Developer' in 'Nigeria' type:'all' local:False
+2025-09-28 15:55:02,470 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 15:55:02,470 - job_aggregator - INFO - Starting comprehensive job search: 'Full Stack Web Developer' in 'Nigeria'
+2025-09-28 15:55:02,470 - job_aggregator - INFO - Starting API searches...
+2025-09-28 15:55:02,471 - job_aggregator - ERROR - Function search_jsearch error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:02,471 - job_aggregator - ERROR - Function search_jooble error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:02,471 - job_aggregator - ERROR - Function search_adzuna error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:02,471 - job_aggregator - INFO - JSearch API: Found 0 jobs
+2025-09-28 15:55:02,471 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-28 15:55:02,472 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-28 15:55:02,472 - job_aggregator - INFO - Starting scraper searches...
+2025-09-28 15:55:02,472 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:02,472 - job_aggregator - INFO - Jobberman: Found 0 jobs
+2025-09-28 15:55:02,472 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:02,473 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 15:55:02,473 - job_aggregator - INFO - Search completed in 0.0s: 0 total, 0 unique jobs
+2025-09-28 15:55:02,473 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:55:02] "POST / HTTP/1.1" 200 -
+2025-09-28 15:55:15,112 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 15:55:15,112 - __main__ - INFO - Job search: 'Developer' in 'Nigeria' type:'all' local:False
+2025-09-28 15:55:15,112 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 15:55:15,113 - job_aggregator - INFO - Starting comprehensive job search: 'Developer' in 'Nigeria'
+2025-09-28 15:55:15,113 - job_aggregator - INFO - Starting API searches...
+2025-09-28 15:55:15,113 - job_aggregator - ERROR - Function search_jsearch error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:15,113 - job_aggregator - ERROR - Function search_jooble error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:15,113 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-28 15:55:15,114 - job_aggregator - ERROR - Function search_adzuna error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:15,114 - job_aggregator - INFO - JSearch API: Found 0 jobs
+2025-09-28 15:55:15,114 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-28 15:55:15,114 - job_aggregator - INFO - Starting scraper searches...
+2025-09-28 15:55:15,114 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:15,114 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:15,114 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 15:55:15,114 - job_aggregator - INFO - Jobberman: Found 0 jobs
+2025-09-28 15:55:15,115 - job_aggregator - INFO - Search completed in 0.0s: 0 total, 0 unique jobs
+2025-09-28 15:55:15,115 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:55:15] "POST / HTTP/1.1" 200 -
+2025-09-28 15:55:33,033 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 15:55:33,034 - __main__ - INFO - Job search: 'Developer' in 'UK' type:'all' local:False
+2025-09-28 15:55:33,034 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 15:55:33,034 - job_aggregator - INFO - Starting comprehensive job search: 'Developer' in 'UK'
+2025-09-28 15:55:33,035 - job_aggregator - INFO - Starting API searches...
+2025-09-28 15:55:33,035 - job_aggregator - ERROR - Function search_jsearch error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:33,035 - job_aggregator - ERROR - Function search_jooble error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:33,035 - job_aggregator - INFO - JSearch API: Found 0 jobs
+2025-09-28 15:55:33,035 - job_aggregator - ERROR - Function search_adzuna error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:33,035 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-28 15:55:33,035 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-28 15:55:33,036 - job_aggregator - INFO - Starting scraper searches...
+2025-09-28 15:55:33,036 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:33,036 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 15:55:33,036 - job_aggregator - INFO - Search completed in 0.0s: 0 total, 0 unique jobs
+2025-09-28 15:55:33,037 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:55:33] "POST / HTTP/1.1" 200 -
+2025-09-28 15:55:59,794 - __main__ - INFO - POST / - 127.0.0.1
+2025-09-28 15:55:59,794 - __main__ - INFO - Job search: 'Copywriter' in 'New York' type:'all' local:False
+2025-09-28 15:55:59,794 - proxy_manager - INFO - Loaded 10 proxies
+2025-09-28 15:55:59,795 - job_aggregator - INFO - Starting comprehensive job search: 'Copywriter' in 'New York'
+2025-09-28 15:55:59,795 - job_aggregator - INFO - Starting API searches...
+2025-09-28 15:55:59,795 - job_aggregator - ERROR - Function search_jsearch error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:59,795 - job_aggregator - ERROR - Function search_jooble error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:59,795 - job_aggregator - INFO - JSearch API: Found 0 jobs
+2025-09-28 15:55:59,795 - job_aggregator - ERROR - Function search_adzuna error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:59,795 - job_aggregator - INFO - Jooble API: Found 0 jobs
+2025-09-28 15:55:59,796 - job_aggregator - INFO - Adzuna API: Found 0 jobs
+2025-09-28 15:55:59,796 - job_aggregator - INFO - Starting scraper searches...
+2025-09-28 15:55:59,796 - job_aggregator - ERROR - Function search_jobs error: signal only works in main thread of the main interpreter
+2025-09-28 15:55:59,796 - job_aggregator - INFO - Indeed: Found 0 jobs
+2025-09-28 15:55:59,796 - job_aggregator - INFO - Search completed in 0.0s: 0 total, 0 unique jobs
+2025-09-28 15:55:59,797 - werkzeug - INFO - 127.0.0.1 - - [28/Sep/2025 15:55:59] "POST / HTTP/1.1" 200 -
