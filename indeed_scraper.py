@@ -1,7 +1,6 @@
 import asyncio
 import random
 import logging
-import time
 from typing import List, Dict, Optional
 from playwright.async_api import async_playwright
 from playwright_stealth import stealth_async
@@ -92,26 +91,40 @@ class IndeedScraper:
                         '--no-sandbox',
                         '--disable-setuid-sandbox',
                         '--disable-dev-shm-usage',
-                        '--disable-gpu'
+                        '--disable-gpu',
+                        '--disable-blink-features=AutomationControlled'
                     ]
                 )
                 
-                page = await browser.new_page()
+                # Create context with specific user agent
+                context = await browser.new_context(
+                    user_agent=self.ua_manager.get_chrome_user_agent(),
+                    viewport={'width': 1366, 'height': 768},
+                    locale='en-US',
+                    timezone_id='America/New_York'
+                )
+                
+                page = await context.new_page()
                 
                 # Apply stealth
                 await stealth_async(page)
                 
-                # Set realistic user agent
-                await page.set_user_agent(self.ua_manager.get_chrome_user_agent())
+                # Set additional headers
+                await page.set_extra_http_headers({
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+                })
                 
                 # Navigate to Indeed
                 await page.goto(search_url, wait_until='domcontentloaded', timeout=20000)
                 
-                # Wait a bit for content to load
+                # Wait for content to load
                 await page.wait_for_timeout(3000)
                 
                 # Parse jobs from page
                 jobs = await self._parse_jobs_from_page(page, base_url, max_results)
+                
+                await context.close()
                 
         except Exception as e:
             logger.warning(f"Playwright Indeed search failed: {str(e)}")
